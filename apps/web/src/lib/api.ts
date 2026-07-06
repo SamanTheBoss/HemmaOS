@@ -1,4 +1,14 @@
-const API_BASE = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4000";
+// The API runs on port 4000 on the *same box* that serves this dashboard.
+// Deriving the base from the current URL means a browser on 192.168.1.126:3000
+// talks to 192.168.1.126:4000 (the box) — not to whatever happens to run on the
+// viewer's own localhost. An explicit NEXT_PUBLIC_API_URL still wins if set.
+function resolveApiBase(): string {
+  if (process.env.NEXT_PUBLIC_API_URL) return process.env.NEXT_PUBLIC_API_URL;
+  if (typeof window !== "undefined") {
+    return `${window.location.protocol}//${window.location.hostname}:4000`;
+  }
+  return "http://localhost:4000";
+}
 
 let authToken: string | null = null;
 
@@ -10,7 +20,7 @@ async function request<T>(path: string, options?: RequestInit): Promise<T> {
     headers["Authorization"] = `Bearer ${authToken}`;
   }
 
-  const res = await fetch(`${API_BASE}${path}`, {
+  const res = await fetch(`${resolveApiBase()}${path}`, {
     headers,
     ...options,
   });
@@ -135,7 +145,7 @@ export const api = {
     request<{ logs: string }>(`/api/logs/${container}?tail=${tail}`),
 
   streamLogsUrl: (container: string) =>
-    `${API_BASE}/api/logs/${container}/stream`,
+    `${resolveApiBase()}/api/logs/${container}/stream`,
 
   // Backup
   getBackupJobs: () =>
