@@ -1,13 +1,13 @@
 {
-    email info@home-os.se
+    email info@hemmaos.se
 }
 
 :80 {
     handle {
-        reverse_proxy http://home-os-web:3000
+        reverse_proxy http://hemmaos-web:3000
     }
 
     handle_path /api/* {
-        reverse_proxy http://home-os-api:4000
+        reverse_proxy http://hemmaos-api:4000
     }
 }

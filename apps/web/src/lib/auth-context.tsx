@@ -43,7 +43,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   });
 
   useEffect(() => {
-    const stored = localStorage.getItem("home-os-token");
+    const stored = localStorage.getItem("hemmaos-token");
     // Set token immediately so authCheck can use it
     if (stored) api.setToken(stored);
 
@@ -74,7 +74,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   async function login(password: string) {
     const result = await api.login(password);
-    localStorage.setItem("home-os-token", result.token);
+    localStorage.setItem("hemmaos-token", result.token);
     api.setToken(result.token);
     setState((prev) => ({ ...prev, token: result.token }));
   }
@@ -86,13 +86,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     timezone: string;
   }) {
     const result = await api.setup(data);
-    localStorage.setItem("home-os-token", result.token);
+    localStorage.setItem("hemmaos-token", result.token);
     api.setToken(result.token);
     setState({ token: result.token, setupComplete: true, loading: false });
   }
 
   function logout() {
-    localStorage.removeItem("home-os-token");
+    localStorage.removeItem("hemmaos-token");
     api.setToken(null);
     setState((prev) => ({ ...prev, token: null }));
   }

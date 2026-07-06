@@ -31,7 +31,7 @@ export default function HemPage() {
     return (
       <div className="space-y-4">
         <StatusHeader status="UNHEALTHY" />
-        <p className="text-sm text-red-500 text-center">{error}</p>
+        <p className="text-sm text-red-400 text-center">{error}</p>
       </div>
     );
   }
@@ -39,10 +39,10 @@ export default function HemPage() {
   if (!data) {
     return (
       <div className="space-y-4">
-        <div className="animate-pulse rounded-2xl bg-gray-100 h-28" />
-        <div className="animate-pulse rounded-2xl bg-gray-100 h-36" />
-        <div className="animate-pulse rounded-2xl bg-gray-100 h-36" />
-        <div className="animate-pulse rounded-2xl bg-gray-100 h-28" />
+        <div className="shimmer rounded-2xl border border-line h-28" />
+        <div className="shimmer rounded-2xl border border-line h-36" />
+        <div className="shimmer rounded-2xl border border-line h-36" />
+        <div className="shimmer rounded-2xl border border-line h-28" />
       </div>
     );
   }

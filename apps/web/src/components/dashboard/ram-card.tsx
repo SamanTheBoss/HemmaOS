@@ -13,15 +13,15 @@ export function RamCard({ percent }: RamCardProps) {
     <Card>
       <CardHeader>
         <div className="flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-orange-50">
-            <Cpu className="h-5 w-5 text-orange-600" />
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-amber-400 to-orange-600 shadow-lg shadow-orange-500/20">
+            <Cpu className="h-5 w-5 text-white" />
           </div>
           <CardTitle>Minne</CardTitle>
         </div>
       </CardHeader>
       <CardContent>
         <Progress value={percent} className="mb-3" />
-        <p className="text-sm font-medium text-gray-700">
+        <p className="text-sm font-medium text-slate-300">
           {percent}% av RAM används
         </p>
       </CardContent>

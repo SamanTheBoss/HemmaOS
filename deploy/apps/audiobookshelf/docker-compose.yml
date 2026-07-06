@@ -6,13 +6,13 @@ services:
     ports:
       - "13378:80"
     volumes:
-      - /opt/home-os/data/audiobookshelf/config:/config
-      - /opt/home-os/data/audiobookshelf/metadata:/metadata
-      - /opt/home-os/data/media/audiobooks:/audiobooks
-      - /opt/home-os/data/media/podcasts:/podcasts
+      - /opt/hemmaos/data/audiobookshelf/config:/config
+      - /opt/hemmaos/data/audiobookshelf/metadata:/metadata
+      - /opt/hemmaos/data/media/audiobooks:/audiobooks
+      - /opt/hemmaos/data/media/podcasts:/podcasts
     networks:
-      - home-os
+      - hemmaos
 
 networks:
-  home-os:
+  hemmaos:
     external: true

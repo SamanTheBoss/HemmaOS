@@ -81,8 +81,8 @@ export function RemoteAccess() {
     <Card>
       <CardHeader>
         <div className="flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-cyan-50">
-            <Globe className="h-5 w-5 text-cyan-600" />
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-cyan-400 to-teal-600 shadow-lg shadow-teal-500/20">
+            <Globe className="h-5 w-5 text-white" />
           </div>
           <CardTitle>Fjärråtkomst</CardTitle>
         </div>
@@ -90,16 +90,16 @@ export function RemoteAccess() {
       <CardContent className="space-y-3">
         {loading ? (
           <div className="flex items-center justify-center py-4">
-            <Loader2 className="h-5 w-5 animate-spin text-gray-400" />
+            <Loader2 className="h-5 w-5 animate-spin text-slate-500" />
           </div>
         ) : (
           <>
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-700">
+                <p className="text-sm text-slate-300">
                   Kom åt boxen utanför hemmet
                 </p>
-                <p className="text-xs text-gray-400 mt-0.5">Via Tailscale</p>
+                <p className="text-xs text-slate-500 mt-0.5">Via Tailscale</p>
               </div>
               <Switch
                 checked={running}
@@ -109,16 +109,16 @@ export function RemoteAccess() {
             </div>
 
             {authenticated && hostname && (
-              <div className="flex items-center gap-2 rounded-xl bg-green-50 p-3">
-                <CheckCircle2 className="h-4 w-4 text-green-600 shrink-0" />
-                <p className="text-xs text-green-800 truncate">{hostname}</p>
+              <div className="flex items-center gap-2 rounded-xl bg-emerald-400/10 border border-emerald-400/20 p-3">
+                <CheckCircle2 className="h-4 w-4 text-emerald-400 shrink-0" />
+                <p className="text-xs text-emerald-200/90 truncate">{hostname}</p>
               </div>
             )}
 
             {!authenticated && !authUrl && !running && (
-              <div className="flex items-center gap-2 rounded-xl bg-gray-50 p-3">
-                <XCircle className="h-4 w-4 text-gray-400 shrink-0" />
-                <p className="text-xs text-gray-500">
+              <div className="flex items-center gap-2 rounded-xl bg-white/[.03] border border-line p-3">
+                <XCircle className="h-4 w-4 text-slate-500 shrink-0" />
+                <p className="text-xs text-slate-400">
                   Slå på för att logga in med Tailscale.
                 </p>
               </div>
@@ -126,7 +126,7 @@ export function RemoteAccess() {
 
             {authUrl && (
               <div className="space-y-3">
-                <p className="text-sm text-gray-600">
+                <p className="text-sm text-slate-400">
                   Logga in med ditt Tailscale-konto:
                 </p>
                 <Button asChild className="w-full" size="sm">
@@ -139,7 +139,7 @@ export function RemoteAccess() {
                     Öppna Tailscale-inloggning
                   </a>
                 </Button>
-                <div className="flex items-center justify-center gap-2 text-xs text-gray-400">
+                <div className="flex items-center justify-center gap-2 text-xs text-slate-500">
                   <Loader2 className="h-3 w-3 animate-spin" />
                   Väntar på inloggning...
                 </div>

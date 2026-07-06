@@ -1,7 +1,7 @@
 services:
   # Frontend Dashboard (Next.js)
   web:
-    container_name: home-os-web
+    container_name: hemmaos-web
     build:
       context: ..
       dockerfile: deploy/Dockerfile.web
@@ -11,11 +11,11 @@ services:
     depends_on:
       - api
     networks:
-      - home-os-dev
+      - hemmaos-dev
 
   # Backend API (Express)
   api:
-    container_name: home-os-api
+    container_name: hemmaos-api
     build:
       context: ..
       dockerfile: deploy/Dockerfile.api
@@ -28,7 +28,7 @@ services:
       # through the Docker socket (container path == host daemon path).
       # Run `bash deploy/install.sh` on the WSL2 host first so this dir exists
       # with the app compose templates + data dirs. See deploy/TESTING.md.
-      - /opt/home-os:/opt/home-os
+      - /opt/hemmaos:/opt/hemmaos
     environment:
       - PORT=4000
       - JWT_SECRET=dev-secret-for-local-testing-only
@@ -37,9 +37,9 @@ services:
       # Off by default (open-source model) — leave empty and support stays disabled.
       - TAILSCALE_SUPPORT_KEY=${TAILSCALE_SUPPORT_KEY:-}
     networks:
-      - home-os-dev
+      - hemmaos-dev
 
 networks:
-  home-os-dev:
-    name: home-os
+  hemmaos-dev:
+    name: hemmaos
     driver: bridge

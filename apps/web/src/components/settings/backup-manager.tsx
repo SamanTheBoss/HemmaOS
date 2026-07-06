@@ -29,10 +29,10 @@ interface BackupJob {
 }
 
 const STATUS_ICONS: Record<string, React.ReactNode> = {
-  success: <CheckCircle2 className="h-4 w-4 text-green-500" />,
-  failed: <XCircle className="h-4 w-4 text-red-500" />,
-  running: <Loader2 className="h-4 w-4 text-blue-500 animate-spin" />,
-  never: <Clock className="h-4 w-4 text-gray-300" />,
+  success: <CheckCircle2 className="h-4 w-4 text-emerald-400" />,
+  failed: <XCircle className="h-4 w-4 text-red-400" />,
+  running: <Loader2 className="h-4 w-4 text-accent animate-spin" />,
+  never: <Clock className="h-4 w-4 text-slate-600" />,
 };
 
 const TARGET_LABELS: Record<string, string> = {
@@ -95,8 +95,8 @@ export function BackupManager() {
         <CardHeader>
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-teal-50">
-                <FolderSync className="h-5 w-5 text-teal-600" />
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-cyan-400 to-teal-600 shadow-lg shadow-teal-500/20">
+                <FolderSync className="h-5 w-5 text-white" />
               </div>
               <CardTitle>Synkronisering</CardTitle>
             </div>
@@ -108,7 +108,7 @@ export function BackupManager() {
         </CardHeader>
         <CardContent>
           {jobs.length === 0 ? (
-            <p className="text-sm text-gray-400 text-center py-4">
+            <p className="text-sm text-slate-500 text-center py-4">
               Inga synkjobb konfigurerade. Tryck &quot;Ny&quot; för att börja.
             </p>
           ) : (
@@ -116,14 +116,14 @@ export function BackupManager() {
               {jobs.map((job) => (
                 <div
                   key={job.id}
-                  className="flex items-center gap-3 rounded-xl border border-gray-100 p-3"
+                  className="flex items-center gap-3 rounded-xl border border-line bg-white/[.02] p-3"
                 >
                   {STATUS_ICONS[job.lastStatus] ?? STATUS_ICONS.never}
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-gray-900 truncate">
+                    <p className="text-sm font-medium text-slate-200 truncate">
                       {job.name}
                     </p>
-                    <p className="text-xs text-gray-400">
+                    <p className="text-xs text-slate-500">
                       {TARGET_LABELS[job.targetType] ?? job.targetType} &middot;{" "}
                       {SCHEDULE_LABELS[job.schedule] ?? job.schedule}
                     </p>
@@ -145,7 +145,7 @@ export function BackupManager() {
                     <Button
                       variant="ghost"
                       size="icon"
-                      className="h-8 w-8 text-red-500 hover:text-red-700"
+                      className="h-8 w-8 text-red-400 hover:text-red-300"
                       onClick={() => handleDelete(job.id)}
                     >
                       <Trash2 className="h-4 w-4" />

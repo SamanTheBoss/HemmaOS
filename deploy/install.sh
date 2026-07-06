@@ -2,7 +2,8 @@
 set -euo pipefail
 
 # HemmaOS Install Script
-# Sets up the directory structure and copies app templates to the host
+# Sets up the directory structure, ensures Docker is installed,
+# copies app templates to the host and starts the stack.
 
 echo "=== HemmaOS Installation ==="
 
@@ -10,38 +11,103 @@ echo "=== HemmaOS Installation ==="
 # so the relative `apps/<app>/...` and `Caddyfile` copies resolve.
 cd "$(dirname "$0")"
 
+# ---------------------------------------------------------------------------
+# 0. Ensure Docker Engine + Compose plugin are available
+#
+# Some minimal server images ship `podman-docker`, which aliases `docker`
+# to podman. That shim does NOT understand `docker compose` and rejects the
+# `-f` flag ("unknown shorthand flag: 'f'"), so we must install real Docker CE.
+# ---------------------------------------------------------------------------
+
+# Prefer sudo when not already root.
+SUDO=""
+if [ "$(id -u)" -ne 0 ]; then
+  SUDO="sudo"
+fi
+
+has_docker_compose() {
+  command -v docker >/dev/null 2>&1 && docker compose version >/dev/null 2>&1
+}
+
+install_docker() {
+  echo "Docker med compose-plugin saknas — installerar Docker CE..."
+
+  # The podman-docker shim hijacks the `docker` command and lacks `compose`.
+  # Remove it first so the real Docker CLI wins.
+  if command -v apt-get >/dev/null 2>&1; then
+    if dpkg -l 2>/dev/null | grep -qE '^ii\s+podman-docker'; then
+      echo "Tar bort podman-docker (krockar med Docker CE)..."
+      $SUDO apt-get remove -y podman-docker || true
+    fi
+    $SUDO apt-get update -y || true
+    $SUDO apt-get install -y curl ca-certificates || true
+  fi
+
+  # Official convenience script installs docker-ce + docker-compose-plugin
+  # for all supported distros (Debian/Ubuntu/Fedora/CentOS...).
+  curl -fsSL https://get.docker.com | $SUDO sh
+
+  # Enable and start the daemon (no-op on systems without systemd).
+  $SUDO systemctl enable --now docker 2>/dev/null || true
+}
+
+if ! has_docker_compose; then
+  install_docker
+fi
+
+if ! has_docker_compose; then
+  echo "FEL: 'docker compose' är fortfarande inte tillgängligt efter installationen." >&2
+  echo "Kontrollera Docker-installationen manuellt (docker compose version) och kör om skriptet." >&2
+  exit 1
+fi
+
+echo "Docker OK: $(docker --version)"
+echo "Compose OK: $(docker compose version | head -n1)"
+
+# ---------------------------------------------------------------------------
+# 1. Directory structure and templates
+# ---------------------------------------------------------------------------
+
 # Create the base directory structure
-sudo mkdir -p /opt/home-os/{config,data,apps}
+$SUDO mkdir -p /opt/hemmaos/{config,data,apps}
 
 # Copy app compose templates
 for app in immich jellyfin adguard vaultwarden audiobookshelf; do
-  sudo mkdir -p "/opt/home-os/apps/$app"
-  sudo cp "apps/$app/docker-compose.yml" "/opt/home-os/apps/$app/"
+  $SUDO mkdir -p "/opt/hemmaos/apps/$app"
+  $SUDO cp "apps/$app/docker-compose.yml" "/opt/hemmaos/apps/$app/"
 done
 
 # Copy default Caddyfile
-sudo cp Caddyfile /opt/home-os/config/Caddyfile
+$SUDO cp Caddyfile /opt/hemmaos/config/Caddyfile
 
 # Create data directories for each app
-sudo mkdir -p /opt/home-os/data/{immich/upload,immich/db,immich/model-cache}
-sudo mkdir -p /opt/home-os/data/{jellyfin/config,jellyfin/cache}
-sudo mkdir -p /opt/home-os/data/{adguard/work,adguard/conf}
-sudo mkdir -p /opt/home-os/data/vaultwarden
-sudo mkdir -p /opt/home-os/data/{audiobookshelf/config,audiobookshelf/metadata}
-sudo mkdir -p /opt/home-os/data/{media/audiobooks,media/podcasts}
-sudo mkdir -p /opt/home-os/data/backup
+$SUDO mkdir -p /opt/hemmaos/data/{immich/upload,immich/db,immich/model-cache}
+$SUDO mkdir -p /opt/hemmaos/data/{jellyfin/config,jellyfin/cache}
+$SUDO mkdir -p /opt/hemmaos/data/{adguard/work,adguard/conf}
+$SUDO mkdir -p /opt/hemmaos/data/vaultwarden
+$SUDO mkdir -p /opt/hemmaos/data/{audiobookshelf/config,audiobookshelf/metadata}
+$SUDO mkdir -p /opt/hemmaos/data/{media/audiobooks,media/podcasts}
+$SUDO mkdir -p /opt/hemmaos/data/backup
 
 # Create the Docker network if it doesn't exist
-docker network create home-os 2>/dev/null || true
+$SUDO docker network create hemmaos 2>/dev/null || true
 
 # Generate a random JWT secret if not already set
-if [ ! -f /opt/home-os/config/.env ]; then
+if [ ! -f /opt/hemmaos/config/.env ]; then
   JWT_SECRET=$(openssl rand -hex 32)
-  echo "JWT_SECRET=$JWT_SECRET" | sudo tee /opt/home-os/config/.env > /dev/null
+  echo "JWT_SECRET=$JWT_SECRET" | $SUDO tee /opt/hemmaos/config/.env > /dev/null
   echo "Generated JWT secret."
 fi
 
+# ---------------------------------------------------------------------------
+# 2. Start the stack
+# ---------------------------------------------------------------------------
+
+echo ""
+echo "Startar HemmaOS (docker compose up -d)..."
+$SUDO docker compose -f docker-compose.yml up -d
+
 echo ""
 echo "=== Installation complete ==="
-echo "Start HemmaOS with: docker compose -f docker-compose.yml up -d"
+echo "HemmaOS körs nu. Öppna dashboarden och slutför uppsättningen i webbläsaren."
 echo ""

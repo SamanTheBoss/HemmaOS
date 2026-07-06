@@ -6,7 +6,7 @@ services:
     ports:
       - "2283:2283"
     volumes:
-      - /opt/home-os/data/immich/upload:/usr/src/app/upload
+      - /opt/hemmaos/data/immich/upload:/usr/src/app/upload
       - /etc/localtime:/etc/localtime:ro
     env_file:
       - .env
@@ -20,23 +20,23 @@ services:
       - immich-db
       - immich-redis
     networks:
-      - home-os
+      - hemmaos
 
   immich-machine-learning:
     container_name: immich_machine_learning
     image: ghcr.io/immich-app/immich-machine-learning:release
     restart: unless-stopped
     volumes:
-      - /opt/home-os/data/immich/model-cache:/cache
+      - /opt/hemmaos/data/immich/model-cache:/cache
     networks:
-      - home-os
+      - hemmaos
 
   immich-redis:
     container_name: immich_redis
     image: redis:7-alpine
     restart: unless-stopped
     networks:
-      - home-os
+      - hemmaos
 
   immich-db:
     container_name: immich_db
@@ -47,10 +47,10 @@ services:
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: immich
     volumes:
-      - /opt/home-os/data/immich/db:/var/lib/postgresql/data
+      - /opt/hemmaos/data/immich/db:/var/lib/postgresql/data
     networks:
-      - home-os
+      - hemmaos
 
 networks:
-  home-os:
+  hemmaos:
     external: true

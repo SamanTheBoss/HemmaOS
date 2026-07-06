@@ -14,28 +14,28 @@ export function StatusHeader({ status }: StatusHeaderProps) {
   return (
     <div
       className={cn(
-        "flex items-center gap-4 rounded-2xl p-6 shadow-sm",
-        isHealthy && "bg-green-50 border border-green-100",
-        isDegraded && "bg-yellow-50 border border-yellow-100",
-        !isHealthy && !isDegraded && "bg-red-50 border border-red-100",
+        "flex items-center gap-4 rounded-2xl border p-6",
+        isHealthy && "bg-emerald-400/10 border-emerald-400/20 shadow-lg shadow-emerald-500/10",
+        isDegraded && "bg-amber-400/10 border-amber-400/20 shadow-lg shadow-amber-500/10",
+        !isHealthy && !isDegraded && "bg-red-400/10 border-red-400/20 shadow-lg shadow-red-500/10",
       )}
     >
       {isHealthy ? (
-        <CheckCircle2 className="h-12 w-12 text-green-500 shrink-0" />
+        <CheckCircle2 className="h-12 w-12 text-emerald-400 shrink-0" />
       ) : isDegraded ? (
-        <AlertTriangle className="h-12 w-12 text-yellow-500 shrink-0" />
+        <AlertTriangle className="h-12 w-12 text-amber-400 shrink-0" />
       ) : (
-        <XCircle className="h-12 w-12 text-red-500 shrink-0" />
+        <XCircle className="h-12 w-12 text-red-400 shrink-0" />
       )}
       <div>
-        <h1 className="text-xl font-bold text-gray-900">
+        <h1 className="text-xl font-bold tracking-tight text-white">
           {isHealthy
             ? "Ditt hem är säkrat"
             : isDegraded
               ? "Något behöver uppmärksamhet"
               : "Systemet har problem"}
         </h1>
-        <p className="text-sm text-gray-500 mt-0.5">
+        <p className="text-sm text-slate-400 mt-0.5">
           {isHealthy
             ? "Alla tjänster körs som de ska."
             : "Kontrollera inställningarna."}

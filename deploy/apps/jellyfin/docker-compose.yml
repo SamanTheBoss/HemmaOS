@@ -6,14 +6,14 @@ services:
     ports:
       - "8096:8096"
     volumes:
-      - /opt/home-os/data/jellyfin/config:/config
-      - /opt/home-os/data/jellyfin/cache:/cache
-      - /opt/home-os/data/media:/media:ro
+      - /opt/hemmaos/data/jellyfin/config:/config
+      - /opt/hemmaos/data/jellyfin/cache:/cache
+      - /opt/hemmaos/data/media:/media:ro
     environment:
       - JELLYFIN_PublishedServerUrl=${TAILSCALE_DOMAIN:-localhost}
     networks:
-      - home-os
+      - hemmaos
 
 networks:
-  home-os:
+  hemmaos:
     external: true

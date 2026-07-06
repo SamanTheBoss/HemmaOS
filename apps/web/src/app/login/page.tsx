@@ -29,24 +29,24 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="flex min-h-dvh flex-col items-center justify-center bg-gray-50 px-4">
-      <div className="w-full max-w-sm">
+    <div className="ambient relative z-10 flex min-h-dvh flex-col items-center justify-center bg-base px-4">
+      <div className="view-in w-full max-w-sm">
         {/* Logo */}
         <div className="mb-8 text-center">
-          <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-blue-600 text-white shadow-lg">
+          <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-accent to-violet text-white shadow-xl shadow-violet/30">
             <Server className="h-8 w-8" />
           </div>
-          <h1 className="text-2xl font-bold text-gray-900">HemmaOS</h1>
+          <h1 className="text-2xl font-bold tracking-tight text-white">HemmaOS</h1>
         </div>
 
-        <Card className="border-0 shadow-lg">
+        <Card className="p-0">
           <CardContent className="p-6">
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="flex items-center gap-3 mb-4">
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-50 text-blue-600">
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-accent to-violet text-white shadow-lg shadow-violet/25">
                   <Lock className="h-5 w-5" />
                 </div>
-                <h2 className="text-lg font-semibold text-gray-900">
+                <h2 className="text-lg font-semibold text-white">
                   {t("auth.login.title")}
                 </h2>
               </div>
@@ -64,7 +64,7 @@ export default function LoginPage() {
               </div>
 
               {error && (
-                <p className="text-sm text-red-600">{error}</p>
+                <p className="text-sm text-red-400">{error}</p>
               )}
 
               <Button

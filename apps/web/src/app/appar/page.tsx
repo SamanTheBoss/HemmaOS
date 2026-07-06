@@ -55,15 +55,15 @@ export default function ApparPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-20">
-        <Loader2 className="h-8 w-8 animate-spin text-gray-300" />
+        <Loader2 className="h-8 w-8 animate-spin text-violet" />
       </div>
     );
   }
 
   return (
     <div className="space-y-4">
-      <h1 className="text-2xl font-bold text-gray-900">{t("apps.title")}</h1>
-      <p className="text-sm text-gray-500">{t("apps.subtitle")}</p>
+      <h1 className="text-2xl font-bold tracking-tight text-white">{t("apps.title")}</h1>
+      <p className="text-sm text-slate-400">{t("apps.subtitle")}</p>
 
       <div className="grid grid-cols-2 gap-3">
         {APP_DEFINITIONS.map((app) => {

@@ -24,7 +24,7 @@ COPY --from=build /app/apps/api/package.json apps/api/
 COPY --from=build /app/apps/api/dist apps/api/dist
 RUN pnpm install --frozen-lockfile --prod
 
-RUN mkdir -p /opt/home-os/config /opt/home-os/data /opt/home-os/apps
+RUN mkdir -p /opt/hemmaos/config /opt/hemmaos/data /opt/hemmaos/apps
 
 EXPOSE 4000
 CMD ["node", "apps/api/dist/server.js"]

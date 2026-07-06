@@ -69,7 +69,7 @@ export function SetupStepper({
             <DialogDescription>{app.description}</DialogDescription>
 
             {error && (
-              <p className="text-sm text-red-500 bg-red-50 rounded-xl p-3">
+              <p className="text-sm text-red-300 bg-red-400/10 border border-red-400/20 rounded-xl p-3">
                 {error}
               </p>
             )}
@@ -92,7 +92,7 @@ export function SetupStepper({
                 ))}
               </div>
             ) : (
-              <p className="text-sm text-gray-500 mt-4">
+              <p className="text-sm text-slate-400 mt-4">
                 Inga inställningar krävs. Appen är redo att installeras.
               </p>
             )}
@@ -106,11 +106,11 @@ export function SetupStepper({
         {step === "deploying" && (
           <div className="flex flex-col items-center gap-4 py-8">
             <DialogTitle className="sr-only">Installerar...</DialogTitle>
-            <Loader2 className="h-12 w-12 animate-spin text-blue-500" />
-            <p className="text-lg font-medium text-gray-700">
+            <Loader2 className="h-12 w-12 animate-spin text-violet" />
+            <p className="text-lg font-semibold text-white">
               HemmaOS konfigurerar din app...
             </p>
-            <p className="text-sm text-gray-400">
+            <p className="text-sm text-slate-500">
               Detta kan ta en liten stund
             </p>
           </div>
@@ -119,14 +119,14 @@ export function SetupStepper({
         {step === "done" && (
           <div className="flex flex-col items-center gap-4 py-6">
             <DialogTitle className="sr-only">Klart!</DialogTitle>
-            <CheckCircle2 className="h-16 w-16 text-green-500" />
-            <h2 className="text-xl font-bold text-gray-900">Klart!</h2>
-            <p className="text-sm text-gray-500 text-center">
+            <CheckCircle2 className="h-16 w-16 text-emerald-400" />
+            <h2 className="text-xl font-bold tracking-tight text-white">Klart!</h2>
+            <p className="text-sm text-slate-400 text-center">
               {app.name} är nu installerat och redo att användas.
             </p>
 
             {app.mobileApp && (
-              <p className="text-xs text-gray-400 text-center bg-gray-50 rounded-xl p-3">
+              <p className="text-xs text-slate-400 text-center bg-white/[.03] border border-line rounded-xl p-3">
                 Ladda ner mobilappen <strong>{app.mobileApp}</strong> och
                 anslut med adressen ovan.
               </p>

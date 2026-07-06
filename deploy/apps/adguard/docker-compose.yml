@@ -8,11 +8,11 @@ services:
       - "53:53/tcp"
       - "53:53/udp"
     volumes:
-      - /opt/home-os/data/adguard/work:/opt/adguardhome/work
-      - /opt/home-os/data/adguard/conf:/opt/adguardhome/conf
+      - /opt/hemmaos/data/adguard/work:/opt/adguardhome/work
+      - /opt/hemmaos/data/adguard/conf:/opt/adguardhome/conf
     networks:
-      - home-os
+      - hemmaos
 
 networks:
-  home-os:
+  hemmaos:
     external: true

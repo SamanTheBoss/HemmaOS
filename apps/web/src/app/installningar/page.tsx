@@ -13,8 +13,8 @@ export default function InstallningarPage() {
 
   return (
     <div className="space-y-4">
-      <h1 className="text-2xl font-bold text-gray-900">{t("settings.title")}</h1>
-      <p className="text-sm text-gray-500">{t("settings.subtitle")}</p>
+      <h1 className="text-2xl font-bold tracking-tight text-white">{t("settings.title")}</h1>
+      <p className="text-sm text-slate-400">{t("settings.subtitle")}</p>
 
       <RemoteAccess />
       <SupportToggle />

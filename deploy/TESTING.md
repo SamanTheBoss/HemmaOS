@@ -52,7 +52,7 @@ Bäst för att jobba med MuradiBox-designen. Vill du ha riktig data → nivå 2.
 
 ```bash
 # 1. Skapa host-strukturen + kopiera app-mallar + data-kataloger
-bash deploy/install.sh          # skapar /opt/home-os/{config,data,apps}
+bash deploy/install.sh          # skapar /opt/hemmaos/{config,data,apps}
 
 # 2. Bygg och starta web + api (Caddy behövs inte i dev)
 docker compose -f deploy/docker-compose.dev.yml up --build
@@ -62,14 +62,14 @@ docker compose -f deploy/docker-compose.dev.yml up --build
 
 | Steg | Vad du testar |
 |------|---------------|
-| **Setup-wizard** | Sätt lösenord + systemnamn → `auth.json` skapas i `/opt/home-os/config` |
+| **Setup-wizard** | Sätt lösenord + systemnamn → `auth.json` skapas i `/opt/hemmaos/config` |
 | **Login** | Logga ut / in, fel lösenord ger svenskt fel |
 | **Hem** | Storage- och RAM-kort läser riktig `df`/`free` från containern |
 | **Appar** | Listan visar installerat/ej installerat via docker-socketen |
 | **Inställningar → Loggar** | Väljer container, ser riktiga docker-loggar |
 
-> `auth.json` ligger nu direkt på WSL-hosten (`/opt/home-os/config/auth.json`).
-> Vill du börja om från setup: `sudo rm /opt/home-os/config/auth.json`.
+> `auth.json` ligger nu direkt på WSL-hosten (`/opt/hemmaos/config/auth.json`).
+> Vill du börja om från setup: `sudo rm /opt/hemmaos/config/auth.json`.
 
 ---
 
@@ -80,7 +80,7 @@ lättaste appen (**Vaultwarden** = en container):
 
 1. Gå till **Appar → Vaultwarden → Installera**.
 2. Fyll i admin-lösenord i stepper-steg 1.
-3. Steg 2 skriver `.env` till `/opt/home-os/apps/vaultwarden/` och kör
+3. Steg 2 skriver `.env` till `/opt/hemmaos/apps/vaultwarden/` och kör
    `docker compose up -d`.
 4. Verifiera på hosten:
 
@@ -121,7 +121,7 @@ TAILSCALE_SUPPORT_KEY=tskey-auth-xxxx docker compose -f deploy/docker-compose.de
 ```bash
 docker compose -f deploy/docker-compose.dev.yml down       # stoppa stacken
 docker rm -f vaultwarden adguardhome 2>/dev/null || true   # ev. installerade appar
-sudo rm -rf /opt/home-os                                    # nollställ allt state
+sudo rm -rf /opt/hemmaos                                    # nollställ allt state
 ```
 
 ---

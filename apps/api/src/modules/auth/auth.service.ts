@@ -4,7 +4,7 @@ import { createHash, randomBytes } from "node:crypto";
 import jwt from "jsonwebtoken";
 import { AppError } from "../../shared/middleware/error-handler.js";
 
-const CONFIG_FILE = "/opt/home-os/config/auth.json";
+const CONFIG_FILE = "/opt/hemmaos/config/auth.json";
 const JWT_SECRET =
   process.env["JWT_SECRET"] ?? randomBytes(32).toString("hex");
 

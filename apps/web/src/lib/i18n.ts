@@ -221,13 +221,13 @@ let currentLocale: Locale = "sv";
 export function setLocale(locale: Locale) {
   currentLocale = locale;
   if (typeof window !== "undefined") {
-    localStorage.setItem("home-os-locale", locale);
+    localStorage.setItem("hemmaos-locale", locale);
   }
 }
 
 export function getLocale(): Locale {
   if (typeof window !== "undefined") {
-    const stored = localStorage.getItem("home-os-locale") as Locale | null;
+    const stored = localStorage.getItem("hemmaos-locale") as Locale | null;
     if (stored && (stored === "sv" || stored === "en")) {
       currentLocale = stored;
     }

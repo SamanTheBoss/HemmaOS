@@ -175,7 +175,7 @@ export function BackupWizard({
 
   function handleCloudAuthComplete() {
     // Set the actual targetType to the cloud provider id for the backup job
-    setTargetPath(targetPath || "home-os-backup");
+    setTargetPath(targetPath || "hemmaos-backup");
     setStep("sources");
   }
 
@@ -195,7 +195,7 @@ export function BackupWizard({
       await api.createBackupJob({
         name,
         targetType: actualTargetType,
-        targetPath: targetPath || "home-os-backup",
+        targetPath: targetPath || "hemmaos-backup",
         sources: selectedSources,
         schedule,
       });
@@ -270,14 +270,14 @@ export function BackupWizard({
                   className={cn(
                     "flex flex-col items-center gap-2 rounded-xl border-2 p-4 transition-colors",
                     targetType === type
-                      ? "border-blue-500 bg-blue-50"
-                      : "border-gray-100 hover:border-gray-200",
+                      ? "border-violet/60 bg-violet/10"
+                      : "border-line hover:border-[#343a52]",
                   )}
                 >
                   <Icon
                     className={cn(
                       "h-6 w-6",
-                      targetType === type ? "text-blue-600" : "text-gray-400",
+                      targetType === type ? "text-violet-300" : "text-slate-500",
                     )}
                   />
                   <span className="text-xs font-medium">{label}</span>
@@ -313,7 +313,7 @@ export function BackupWizard({
                     </SelectContent>
                   </Select>
                 ) : (
-                  <p className="text-sm text-gray-400">
+                  <p className="text-sm text-slate-500">
                     Ingen USB-enhet hittades. Anslut en och försök igen.
                   </p>
                 )}
@@ -348,7 +348,7 @@ export function BackupWizard({
             </DialogDescription>
 
             {error && (
-              <p className="text-sm text-red-500 bg-red-50 rounded-xl p-3 mt-2">
+              <p className="text-sm text-red-300 bg-red-400/10 border border-red-400/20 rounded-xl p-3 mt-2">
                 {error}
               </p>
             )}
@@ -358,15 +358,15 @@ export function BackupWizard({
                 <button
                   key={provider.id}
                   onClick={() => handleStartCloudAuth(provider)}
-                  className="flex w-full items-center gap-3 rounded-xl border-2 border-gray-100 p-4 transition-colors hover:border-blue-200 hover:bg-blue-50 text-left"
+                  className="flex w-full items-center gap-3 rounded-xl border border-line bg-white/[.02] p-4 transition-colors hover:border-violet/40 hover:bg-violet/10 text-left"
                 >
-                  <Cloud className="h-5 w-5 text-blue-500" />
-                  <span className="text-sm font-medium">{provider.label}</span>
+                  <Cloud className="h-5 w-5 text-violet-300" />
+                  <span className="text-sm font-medium text-slate-200">{provider.label}</span>
                 </button>
               ))}
               {cloudProviders.length === 0 && (
                 <div className="flex items-center justify-center py-6">
-                  <Loader2 className="h-6 w-6 animate-spin text-gray-400" />
+                  <Loader2 className="h-6 w-6 animate-spin text-slate-500" />
                 </div>
               )}
             </div>
@@ -389,8 +389,8 @@ export function BackupWizard({
 
             {!authUrl && !authDone && (
               <>
-                <Loader2 className="h-10 w-10 animate-spin text-blue-500" />
-                <p className="text-sm text-gray-500">
+                <Loader2 className="h-10 w-10 animate-spin text-violet" />
+                <p className="text-sm text-slate-400">
                   Förbereder inloggning...
                 </p>
               </>
@@ -398,7 +398,7 @@ export function BackupWizard({
 
             {authUrl && !authDone && (
               <>
-                <p className="text-sm text-gray-500 text-center">
+                <p className="text-sm text-slate-400 text-center">
                   Klicka på knappen nedan för att logga in. Kom tillbaka hit
                   efteråt.
                 </p>
@@ -408,7 +408,7 @@ export function BackupWizard({
                     Öppna inloggning
                   </a>
                 </Button>
-                <div className="flex items-center gap-2 text-sm text-gray-400">
+                <div className="flex items-center gap-2 text-sm text-slate-500">
                   <Loader2 className="h-4 w-4 animate-spin" />
                   Väntar på att du loggar in...
                 </div>
@@ -417,8 +417,8 @@ export function BackupWizard({
 
             {authDone && (
               <>
-                <CheckCircle2 className="h-12 w-12 text-green-500" />
-                <p className="text-sm text-green-700 font-medium">
+                <CheckCircle2 className="h-12 w-12 text-emerald-400" />
+                <p className="text-sm text-emerald-300 font-medium">
                   Inloggning lyckades!
                 </p>
 
@@ -427,7 +427,7 @@ export function BackupWizard({
                   <Input
                     value={targetPath}
                     onChange={(e) => setTargetPath(e.target.value)}
-                    placeholder="home-os-backup"
+                    placeholder="hemmaos-backup"
                   />
                 </div>
 
@@ -470,16 +470,16 @@ export function BackupWizard({
                   className={cn(
                     "flex w-full items-center gap-3 rounded-xl border-2 p-3 transition-colors text-left",
                     selectedSources.includes(source.id)
-                      ? "border-blue-500 bg-blue-50"
-                      : "border-gray-100 hover:border-gray-200",
+                      ? "border-violet/60 bg-violet/10"
+                      : "border-line hover:border-[#343a52]",
                   )}
                 >
                   <div
                     className={cn(
                       "flex h-5 w-5 items-center justify-center rounded-md border-2",
                       selectedSources.includes(source.id)
-                        ? "border-blue-500 bg-blue-500"
-                        : "border-gray-300",
+                        ? "border-violet bg-violet"
+                        : "border-slate-600",
                     )}
                   >
                     {selectedSources.includes(source.id) && (
@@ -520,7 +520,7 @@ export function BackupWizard({
             </DialogDescription>
 
             {error && (
-              <p className="text-sm text-red-500 bg-red-50 rounded-xl p-3 mt-2">
+              <p className="text-sm text-red-300 bg-red-400/10 border border-red-400/20 rounded-xl p-3 mt-2">
                 {error}
               </p>
             )}
@@ -533,16 +533,16 @@ export function BackupWizard({
                   className={cn(
                     "flex w-full items-center gap-3 rounded-xl border-2 p-3 transition-colors text-left",
                     schedule === s.id
-                      ? "border-blue-500 bg-blue-50"
-                      : "border-gray-100 hover:border-gray-200",
+                      ? "border-violet/60 bg-violet/10"
+                      : "border-line hover:border-[#343a52]",
                   )}
                 >
                   <div
                     className={cn(
                       "h-4 w-4 rounded-full border-2",
                       schedule === s.id
-                        ? "border-blue-500 bg-blue-500"
-                        : "border-gray-300",
+                        ? "border-violet bg-violet"
+                        : "border-slate-600",
                     )}
                   />
                   <span className="text-sm font-medium">{s.label}</span>
@@ -568,8 +568,8 @@ export function BackupWizard({
         {step === "creating" && (
           <div className="flex flex-col items-center gap-4 py-8">
             <DialogTitle className="sr-only">Skapar...</DialogTitle>
-            <Loader2 className="h-12 w-12 animate-spin text-blue-500" />
-            <p className="text-lg font-medium text-gray-700">
+            <Loader2 className="h-12 w-12 animate-spin text-violet" />
+            <p className="text-lg font-semibold text-white">
               Konfigurerar synkronisering...
             </p>
           </div>
@@ -578,9 +578,9 @@ export function BackupWizard({
         {step === "done" && (
           <div className="flex flex-col items-center gap-4 py-6">
             <DialogTitle className="sr-only">Klart!</DialogTitle>
-            <CheckCircle2 className="h-16 w-16 text-green-500" />
-            <h2 className="text-xl font-bold text-gray-900">Klart!</h2>
-            <p className="text-sm text-gray-500 text-center">
+            <CheckCircle2 className="h-16 w-16 text-emerald-400" />
+            <h2 className="text-xl font-bold tracking-tight text-white">Klart!</h2>
+            <p className="text-sm text-slate-400 text-center">
               Synkroniseringsjobbet &quot;{name}&quot; har skapats.
             </p>
             <Button className="w-full mt-2" onClick={handleClose}>

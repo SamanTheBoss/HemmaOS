@@ -32,7 +32,7 @@ function buildSyncCommand(
     // rclone remote name matches the provider id (configured via cloud auth)
     return `rclone sync ${sourcePaths} ${job.targetType}:${job.targetPath}`;
   }
-  return `rsync -av --delete ${sourcePaths} ${job.targetPath}/home-os-backup/`;
+  return `rsync -av --delete ${sourcePaths} ${job.targetPath}/hemmaos-backup/`;
 }
 
 async function loadJobs(): Promise<BackupJob[]> {
@@ -72,8 +72,8 @@ async function installCronJob(job: BackupJob): Promise<void> {
 
   const command = buildSyncCommand(job, sourcePaths);
 
-  const cronLine = `${cron} ${command} >> /var/log/home-os-backup-${job.id}.log 2>&1`;
-  const marker = `# home-os-backup-${job.id}`;
+  const cronLine = `${cron} ${command} >> /var/log/hemmaos-backup-${job.id}.log 2>&1`;
+  const marker = `# hemmaos-backup-${job.id}`;
 
   await shell(
     `(crontab -l 2>/dev/null | grep -v "${marker}"; echo "${cronLine} ${marker}") | crontab -`,
@@ -81,7 +81,7 @@ async function installCronJob(job: BackupJob): Promise<void> {
 }
 
 async function removeCronJob(jobId: string): Promise<void> {
-  const marker = `# home-os-backup-${jobId}`;
+  const marker = `# hemmaos-backup-${jobId}`;
   await shell(
     `crontab -l 2>/dev/null | grep -v "${marker}" | crontab -`,
   );

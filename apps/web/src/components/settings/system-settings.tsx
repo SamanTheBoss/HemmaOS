@@ -33,10 +33,10 @@ export function SystemSettings() {
   }
 
   return (
-    <Card className="border-0 shadow-sm">
+    <Card>
       <CardHeader className="pb-3">
         <CardTitle className="flex items-center gap-2 text-base font-semibold">
-          <Settings className="h-5 w-5 text-gray-500" />
+          <Settings className="h-5 w-5 text-slate-400" />
           {locale === "sv" ? "System" : "System"}
         </CardTitle>
       </CardHeader>
@@ -60,7 +60,7 @@ export function SystemSettings() {
 
         <Button
           variant="outline"
-          className="w-full text-red-600 hover:text-red-700 hover:bg-red-50"
+          className="w-full text-red-400 hover:text-red-300 hover:bg-red-400/10 hover:border-red-400/30"
           onClick={logout}
         >
           <LogOut className="mr-2 h-4 w-4" />

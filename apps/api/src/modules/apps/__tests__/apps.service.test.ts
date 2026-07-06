@@ -40,13 +40,13 @@ describe("apps.service", () => {
       });
 
       expect(mockWriteFile).toHaveBeenCalledWith(
-        "/opt/home-os/apps/immich/.env",
+        "/opt/hemmaos/apps/immich/.env",
         "ADMIN_PASS=secret\nUSER=admin",
         "utf-8",
       );
 
       expect(mockShell).toHaveBeenCalledWith(
-        "docker compose -f /opt/home-os/apps/immich/docker-compose.yml up -d",
+        "docker compose -f /opt/hemmaos/apps/immich/docker-compose.yml up -d",
       );
 
       expect(result.success).toBe(true);

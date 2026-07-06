@@ -80,8 +80,8 @@ export function LogViewer() {
     <Card>
       <CardHeader>
         <div className="flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gray-800">
-            <Terminal className="h-5 w-5 text-green-400" />
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-slate-700 to-slate-900 border border-line">
+            <Terminal className="h-5 w-5 text-emerald-400" />
           </div>
           <CardTitle>Systemloggar</CardTitle>
         </div>
@@ -97,7 +97,7 @@ export function LogViewer() {
                 <SelectItem key={c.id} value={c.name}>
                   <span className="flex items-center gap-2">
                     <span
-                      className={`h-2 w-2 rounded-full ${c.state === "running" ? "bg-green-500" : "bg-gray-300"}`}
+                      className={`h-2 w-2 rounded-full ${c.state === "running" ? "bg-emerald-400" : "bg-slate-600"}`}
                     />
                     {c.name}
                   </span>
@@ -123,10 +123,10 @@ export function LogViewer() {
 
         <div
           ref={scrollRef}
-          className="h-64 overflow-auto rounded-xl bg-gray-900 p-3 font-mono text-xs text-green-400"
+          className="terminal h-64 overflow-auto rounded-xl border border-violet/25 p-3 font-mono text-xs text-emerald-300"
         >
           {lines.length === 0 ? (
-            <p className="text-gray-500">
+            <p className="text-slate-500">
               {streaming
                 ? "Väntar på loggar..."
                 : "Välj en container och tryck play."}

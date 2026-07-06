@@ -161,7 +161,7 @@ export default function SetupPage() {
             />
           </div>
           {error && (
-            <p className="text-sm text-red-600">{error}</p>
+            <p className="text-sm text-red-400">{error}</p>
           )}
         </div>
       ),
@@ -174,17 +174,17 @@ export default function SetupPage() {
   const isLast = step === steps.length - 1;
 
   return (
-    <div className="flex min-h-dvh flex-col items-center justify-center bg-gray-50 px-4">
-      <div className="w-full max-w-sm">
+    <div className="ambient relative z-10 flex min-h-dvh flex-col items-center justify-center bg-base px-4">
+      <div className="view-in w-full max-w-sm">
         {/* Logo & Title */}
         <div className="mb-8 text-center">
-          <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-blue-600 text-white shadow-lg">
+          <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-accent to-violet text-white shadow-xl shadow-violet/30">
             <Server className="h-8 w-8" />
           </div>
-          <h1 className="text-2xl font-bold text-gray-900">
+          <h1 className="text-2xl font-bold tracking-tight text-white">
             {t("auth.setup.title")}
           </h1>
-          <p className="mt-1 text-sm text-gray-500">
+          <p className="mt-1 text-sm text-slate-400">
             {t("auth.setup.subtitle")}
           </p>
         </div>
@@ -195,23 +195,23 @@ export default function SetupPage() {
             <div
               key={i}
               className={`h-2 rounded-full transition-all ${i === step
-                  ? "w-8 bg-blue-600"
+                  ? "w-8 bg-gradient-to-r from-accent to-violet"
                   : i < step
-                    ? "w-2 bg-blue-400"
-                    : "w-2 bg-gray-200"
+                    ? "w-2 bg-violet/60"
+                    : "w-2 bg-line"
                 }`}
             />
           ))}
         </div>
 
         {/* Step card */}
-        <Card className="border-0 shadow-lg">
+        <Card className="p-0">
           <CardContent className="p-6">
             <div className="mb-4 flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-50 text-blue-600">
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-accent to-violet text-white shadow-lg shadow-violet/25">
                 <StepIcon className="h-5 w-5" />
               </div>
-              <h2 className="text-lg font-semibold text-gray-900">
+              <h2 className="text-lg font-semibold text-white">
                 {currentStep.title}
               </h2>
             </div>

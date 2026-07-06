@@ -1,7 +1,7 @@
 import { readFile, writeFile } from "node:fs/promises";
 import { shell } from "./shell.js";
 
-const CADDYFILE_PATH = "/opt/home-os/config/Caddyfile";
+const CADDYFILE_PATH = "/opt/hemmaos/config/Caddyfile";
 
 interface RouteEntry {
   path: string;
@@ -54,7 +54,7 @@ ${routeBlocks}
  */
 export async function reloadCaddy(): Promise<void> {
   try {
-    await shell("caddy reload --config /opt/home-os/config/Caddyfile");
+    await shell("caddy reload --config /opt/hemmaos/config/Caddyfile");
   } catch {
     // Caddy might not be running yet in dev — ignore
   }

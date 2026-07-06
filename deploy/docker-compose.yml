@@ -1,7 +1,7 @@
 services:
   # Frontend Dashboard (Next.js)
   web:
-    container_name: home-os-web
+    container_name: hemmaos-web
     build:
       context: ..
       dockerfile: deploy/Dockerfile.web
@@ -11,11 +11,11 @@ services:
     depends_on:
       - api
     networks:
-      - home-os
+      - hemmaos
 
   # Backend API (Express)
   api:
-    container_name: home-os-api
+    container_name: hemmaos-api
     build:
       context: ..
       dockerfile: deploy/Dockerfile.api
@@ -24,37 +24,37 @@ services:
       - "4000:4000"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-      - /opt/home-os:/opt/home-os
+      - /opt/hemmaos:/opt/hemmaos
     environment:
       - PORT=4000
       - JWT_SECRET=${JWT_SECRET:-change-me-in-production}
       - TAILSCALE_DOMAIN=${TAILSCALE_DOMAIN:-localhost}
       - TAILSCALE_SUPPORT_KEY=${TAILSCALE_SUPPORT_KEY:-}
     networks:
-      - home-os
+      - hemmaos
 
   # Reverse Proxy (Caddy)
   caddy:
-    container_name: home-os-caddy
+    container_name: hemmaos-caddy
     image: caddy:2-alpine
     restart: unless-stopped
     ports:
       - "80:80"
       - "443:443"
     volumes:
-      - /opt/home-os/config/Caddyfile:/etc/caddy/Caddyfile:ro
+      - /opt/hemmaos/config/Caddyfile:/etc/caddy/Caddyfile:ro
       - caddy-data:/data
       - caddy-config:/config
     depends_on:
       - web
     networks:
-      - home-os
+      - hemmaos
 
 volumes:
   caddy-data:
   caddy-config:
 
 networks:
-  home-os:
-    name: home-os
+  hemmaos:
+    name: hemmaos
     driver: bridge
