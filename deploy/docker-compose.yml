@@ -1,0 +1,60 @@
+services:
+  # Frontend Dashboard (Next.js)
+  web:
+    container_name: home-os-web
+    build:
+      context: ..
+      dockerfile: deploy/Dockerfile.web
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    depends_on:
+      - api
+    networks:
+      - home-os
+
+  # Backend API (Express)
+  api:
+    container_name: home-os-api
+    build:
+      context: ..
+      dockerfile: deploy/Dockerfile.api
+    restart: unless-stopped
+    ports:
+      - "4000:4000"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /opt/home-os:/opt/home-os
+    environment:
+      - PORT=4000
+      - JWT_SECRET=${JWT_SECRET:-change-me-in-production}
+      - TAILSCALE_DOMAIN=${TAILSCALE_DOMAIN:-localhost}
+      - TAILSCALE_SUPPORT_KEY=${TAILSCALE_SUPPORT_KEY:-}
+    networks:
+      - home-os
+
+  # Reverse Proxy (Caddy)
+  caddy:
+    container_name: home-os-caddy
+    image: caddy:2-alpine
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - /opt/home-os/config/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy-data:/data
+      - caddy-config:/config
+    depends_on:
+      - web
+    networks:
+      - home-os
+
+volumes:
+  caddy-data:
+  caddy-config:
+
+networks:
+  home-os:
+    name: home-os
+    driver: bridge

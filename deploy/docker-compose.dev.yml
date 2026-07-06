@@ -1,0 +1,45 @@
+services:
+  # Frontend Dashboard (Next.js)
+  web:
+    container_name: home-os-web
+    build:
+      context: ..
+      dockerfile: deploy/Dockerfile.web
+    restart: "no"
+    ports:
+      - "3000:3000"
+    depends_on:
+      - api
+    networks:
+      - home-os-dev
+
+  # Backend API (Express)
+  api:
+    container_name: home-os-api
+    build:
+      context: ..
+      dockerfile: deploy/Dockerfile.api
+    restart: "no"
+    ports:
+      - "4000:4000"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      # Bind-mount the SAME host path so app-install volumes resolve correctly
+      # through the Docker socket (container path == host daemon path).
+      # Run `bash deploy/install.sh` on the WSL2 host first so this dir exists
+      # with the app compose templates + data dirs. See deploy/TESTING.md.
+      - /opt/home-os:/opt/home-os
+    environment:
+      - PORT=4000
+      - JWT_SECRET=dev-secret-for-local-testing-only
+      - TAILSCALE_DOMAIN=localhost
+      # Optional: paste a real Tailscale auth key to test Fjärrsupport end-to-end.
+      # Off by default (open-source model) — leave empty and support stays disabled.
+      - TAILSCALE_SUPPORT_KEY=${TAILSCALE_SUPPORT_KEY:-}
+    networks:
+      - home-os-dev
+
+networks:
+  home-os-dev:
+    name: home-os
+    driver: bridge

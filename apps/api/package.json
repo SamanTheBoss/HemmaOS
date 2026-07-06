@@ -1,0 +1,28 @@
+{
+  "name": "@home-os/api",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch src/server.ts",
+    "build": "tsc",
+    "start": "node dist/server.js",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@home-os/shared": "workspace:*",
+    "cors": "^2.8.5",
+    "dockerode": "^4.0.7",
+    "express": "^5.1.0",
+    "jsonwebtoken": "^9.0.3",
+    "zod": "^3.25.0"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.18",
+    "@types/dockerode": "^3.3.38",
+    "@types/express": "^5.0.2",
+    "@types/jsonwebtoken": "^9.0.10",
+    "tsx": "^4.19.0",
+    "vitest": "^3.2.0"
+  }
+}

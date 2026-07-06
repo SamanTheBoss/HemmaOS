@@ -1,0 +1,153 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import { Globe, ExternalLink, Loader2, CheckCircle2, XCircle } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Switch } from "@/components/ui/switch";
+import { Button } from "@/components/ui/button";
+import { api } from "@/lib/api";
+
+export function RemoteAccess() {
+  const [loading, setLoading] = useState(true);
+  const [authenticated, setAuthenticated] = useState(false);
+  const [running, setRunning] = useState(false);
+  const [hostname, setHostname] = useState<string | null>(null);
+  const [authUrl, setAuthUrl] = useState<string | null>(null);
+  const [toggling, setToggling] = useState(false);
+
+  useEffect(() => {
+    loadStatus();
+  }, []);
+
+  // Poll for status changes when auth URL is shown
+  useEffect(() => {
+    if (!authUrl) return;
+    const interval = setInterval(async () => {
+      try {
+        const status = await api.getTailscaleStatus();
+        if (status.authenticated) {
+          setAuthenticated(true);
+          setRunning(status.running);
+          setHostname(status.hostname);
+          setAuthUrl(null);
+        }
+      } catch {
+        // keep polling
+      }
+    }, 3000);
+    return () => clearInterval(interval);
+  }, [authUrl]);
+
+  async function loadStatus() {
+    setLoading(true);
+    try {
+      const status = await api.getTailscaleStatus();
+      setAuthenticated(status.authenticated);
+      setRunning(status.running);
+      setHostname(status.hostname);
+    } catch {
+      // offline or tailscale not installed
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function handleToggle(checked: boolean) {
+    setToggling(true);
+    try {
+      if (checked) {
+        const result = await api.startTailscaleAuth();
+        if (result.alreadyAuthenticated) {
+          setAuthenticated(true);
+          setRunning(true);
+          await loadStatus();
+        } else if (result.authUrl) {
+          setAuthUrl(result.authUrl);
+        }
+      } else {
+        await api.stopTailscale();
+        setRunning(false);
+        setAuthenticated(false);
+        setHostname(null);
+      }
+    } catch {
+      // revert
+    } finally {
+      setToggling(false);
+    }
+  }
+
+  return (
+    <Card>
+      <CardHeader>
+        <div className="flex items-center gap-3">
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-cyan-50">
+            <Globe className="h-5 w-5 text-cyan-600" />
+          </div>
+          <CardTitle>Fjärråtkomst</CardTitle>
+        </div>
+      </CardHeader>
+      <CardContent className="space-y-3">
+        {loading ? (
+          <div className="flex items-center justify-center py-4">
+            <Loader2 className="h-5 w-5 animate-spin text-gray-400" />
+          </div>
+        ) : (
+          <>
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-gray-700">
+                  Kom åt boxen utanför hemmet
+                </p>
+                <p className="text-xs text-gray-400 mt-0.5">Via Tailscale</p>
+              </div>
+              <Switch
+                checked={running}
+                onCheckedChange={handleToggle}
+                disabled={toggling}
+              />
+            </div>
+
+            {authenticated && hostname && (
+              <div className="flex items-center gap-2 rounded-xl bg-green-50 p-3">
+                <CheckCircle2 className="h-4 w-4 text-green-600 shrink-0" />
+                <p className="text-xs text-green-800 truncate">{hostname}</p>
+              </div>
+            )}
+
+            {!authenticated && !authUrl && !running && (
+              <div className="flex items-center gap-2 rounded-xl bg-gray-50 p-3">
+                <XCircle className="h-4 w-4 text-gray-400 shrink-0" />
+                <p className="text-xs text-gray-500">
+                  Slå på för att logga in med Tailscale.
+                </p>
+              </div>
+            )}
+
+            {authUrl && (
+              <div className="space-y-3">
+                <p className="text-sm text-gray-600">
+                  Logga in med ditt Tailscale-konto:
+                </p>
+                <Button asChild className="w-full" size="sm">
+                  <a
+                    href={authUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <ExternalLink className="h-4 w-4" />
+                    Öppna Tailscale-inloggning
+                  </a>
+                </Button>
+                <div className="flex items-center justify-center gap-2 text-xs text-gray-400">
+                  <Loader2 className="h-3 w-3 animate-spin" />
+                  Väntar på inloggning...
+                </div>
+              </div>
+            )}
+          </>
+        )}
+      </CardContent>
+    </Card>
+  );
+}

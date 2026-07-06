@@ -1,0 +1,20 @@
+services:
+  vaultwarden:
+    container_name: vaultwarden
+    image: vaultwarden/server:latest
+    restart: unless-stopped
+    ports:
+      - "8080:80"
+    volumes:
+      - /opt/home-os/data/vaultwarden:/data
+    env_file:
+      - .env
+    environment:
+      - DOMAIN=https://${TAILSCALE_DOMAIN:-localhost}/vaultwarden
+      - SIGNUPS_ALLOWED=true
+    networks:
+      - home-os
+
+networks:
+  home-os:
+    external: true

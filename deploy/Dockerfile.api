@@ -1,0 +1,30 @@
+FROM node:22-alpine AS base
+RUN corepack enable && corepack prepare pnpm@latest --activate
+WORKDIR /app
+
+# Copy everything needed for install + build
+FROM base AS build
+COPY pnpm-lock.yaml pnpm-workspace.yaml package.json .npmrc ./
+COPY tsconfig.base.json turbo.json ./
+COPY packages/shared packages/shared
+COPY apps/api apps/api
+RUN pnpm install --frozen-lockfile
+RUN pnpm turbo build --filter=@home-os/api
+
+# Production image
+FROM node:22-alpine AS runner
+RUN corepack enable && corepack prepare pnpm@latest --activate
+RUN apk add --no-cache rsync rclone docker-cli docker-cli-compose coreutils util-linux procps
+
+WORKDIR /app
+COPY --from=build /app/package.json /app/pnpm-workspace.yaml /app/pnpm-lock.yaml /app/.npmrc ./
+COPY --from=build /app/packages/shared/package.json packages/shared/
+COPY --from=build /app/packages/shared/dist packages/shared/dist
+COPY --from=build /app/apps/api/package.json apps/api/
+COPY --from=build /app/apps/api/dist apps/api/dist
+RUN pnpm install --frozen-lockfile --prod
+
+RUN mkdir -p /opt/home-os/config /opt/home-os/data /opt/home-os/apps
+
+EXPOSE 4000
+CMD ["node", "apps/api/dist/server.js"]

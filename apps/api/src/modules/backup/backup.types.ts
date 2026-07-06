@@ -1,0 +1,15 @@
+export type {
+  BackupTargetType,
+  BackupSource,
+  BackupSchedule,
+  BackupJob,
+  CreateBackupJobRequest,
+  CreateBackupJobResponse,
+  BackupJobsResponse,
+  RunBackupRequest,
+  RunBackupResponse,
+  DeleteBackupRequest,
+  DeleteBackupResponse,
+  UsbDevice,
+  UsbDevicesResponse,
+} from "@home-os/shared";
