@@ -55,6 +55,8 @@ volumes:
   caddy-config:
 
 networks:
+  # Shared network created once by install.sh (docker network create hemmaos).
+  # Individually-installed apps (immich, vaultwarden, ...) attach to it as
+  # external too, so the core stack must not try to own it here.
   hemmaos:
-    name: hemmaos
-    driver: bridge
+    external: true
