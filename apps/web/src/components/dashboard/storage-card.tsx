@@ -3,6 +3,8 @@
 import { HardDrive } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
+import { useI18n } from "@/lib/i18n-context";
+import type { Locale } from "@/lib/i18n";
 
 interface StorageCardProps {
   total: string;
@@ -10,15 +12,17 @@ interface StorageCardProps {
   percent: number;
 }
 
-function estimateYears(percentUsed: number): string {
-  if (percentUsed <= 0) return "mycket lång tid";
+function estimateYears(percentUsed: number, locale: Locale): string {
+  const sv = locale === "sv";
+  if (percentUsed <= 0) return sv ? "mycket lång tid" : "a very long time";
   const yearsLeft = Math.round((100 - percentUsed) / percentUsed * 1);
-  if (yearsLeft >= 10) return "över 10 år";
-  if (yearsLeft <= 0) return "lite";
-  return `ca ${yearsLeft} år`;
+  if (yearsLeft >= 10) return sv ? "över 10 år" : "over 10 years";
+  if (yearsLeft <= 0) return sv ? "lite" : "a little while";
+  return sv ? `ca ${yearsLeft} år` : `about ${yearsLeft} years`;
 }
 
 export function StorageCard({ total, used, percent }: StorageCardProps) {
+  const { t, locale } = useI18n();
   return (
     <Card>
       <CardHeader>
@@ -26,16 +30,18 @@ export function StorageCard({ total, used, percent }: StorageCardProps) {
           <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-sky-400 to-blue-600 shadow-lg shadow-blue-500/20">
             <HardDrive className="h-5 w-5 text-white" />
           </div>
-          <CardTitle>Lagring</CardTitle>
+          <CardTitle>{t("dashboard.storage")}</CardTitle>
         </div>
       </CardHeader>
       <CardContent>
         <Progress value={percent} className="mb-3" />
         <p className="text-sm font-medium text-slate-300">
-          {used} av {total} använt
+          {t("dashboard.storage.used", { used, total })}
         </p>
         <p className="text-xs text-slate-500 mt-1">
-          ~ Utrymme kvar för {estimateYears(percent)} familjebilder
+          {t("dashboard.storage.estimate", {
+            years: estimateYears(percent, locale),
+          })}
         </p>
       </CardContent>
     </Card>

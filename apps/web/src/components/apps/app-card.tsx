@@ -4,6 +4,7 @@ import { Settings } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import type { AppDefinition } from "@/lib/app-definitions";
+import { useI18n } from "@/lib/i18n-context";
 
 interface AppCardProps {
   app: AppDefinition;
@@ -13,6 +14,7 @@ interface AppCardProps {
 }
 
 export function AppCard({ app, installed, url, onInstall }: AppCardProps) {
+  const { t } = useI18n();
   const Icon = app.icon;
 
   return (
@@ -36,7 +38,7 @@ export function AppCard({ app, installed, url, onInstall }: AppCardProps) {
               asChild
             >
               <a href={url} target="_blank" rel="noopener noreferrer">
-                Öppna
+                {t("apps.open")}
               </a>
             </Button>
             <Button variant="outline" size="icon" className="h-9 w-9">
@@ -45,7 +47,7 @@ export function AppCard({ app, installed, url, onInstall }: AppCardProps) {
           </div>
         ) : (
           <Button size="sm" className="w-full" onClick={onInstall}>
-            Installera
+            {t("apps.install")}
           </Button>
         )}
       </CardContent>

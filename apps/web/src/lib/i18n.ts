@@ -216,7 +216,7 @@ const translations = {
 
 type TranslationKey = keyof (typeof translations)["sv"];
 
-let currentLocale: Locale = "sv";
+let currentLocale: Locale = "en";
 
 export function setLocale(locale: Locale) {
   currentLocale = locale;
@@ -240,7 +240,7 @@ export function t(
   params?: Record<string, string>,
 ): string {
   const str: string =
-    translations[currentLocale]?.[key] ?? translations.sv[key] ?? key;
+    translations[currentLocale]?.[key] ?? translations.en[key] ?? key;
   if (!params) return str;
   return Object.entries(params).reduce<string>(
     (acc, [k, v]) => acc.replace(`{${k}}`, v),

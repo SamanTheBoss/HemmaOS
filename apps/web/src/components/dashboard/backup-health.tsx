@@ -8,6 +8,7 @@ import {
   XCircle,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useI18n } from "@/lib/i18n-context";
 
 interface BackupHealthProps {
   lastSuccess: string;
@@ -15,6 +16,7 @@ interface BackupHealthProps {
 }
 
 export function BackupHealth({ lastSuccess, status }: BackupHealthProps) {
+  const { t } = useI18n();
   const isOk = status === "OK";
   const isFailed = status === "FAILED";
   const isUnknown = status === "UNKNOWN";
@@ -26,7 +28,7 @@ export function BackupHealth({ lastSuccess, status }: BackupHealthProps) {
           <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-violet to-purple-700 shadow-lg shadow-violet/25">
             <CloudUpload className="h-5 w-5 text-white" />
           </div>
-          <CardTitle>Backup</CardTitle>
+          <CardTitle>{t("dashboard.backup")}</CardTitle>
         </div>
       </CardHeader>
       <CardContent>
@@ -38,12 +40,12 @@ export function BackupHealth({ lastSuccess, status }: BackupHealthProps) {
         </div>
         {isUnknown && (
           <p className="text-xs text-slate-500 mt-2">
-            Konfigurera synkronisering under Inställningar.
+            {t("dashboard.backup.configure")}
           </p>
         )}
         {isFailed && (
           <p className="text-xs text-red-400 mt-2">
-            Kontrollera synkinställningarna.
+            {t("dashboard.backup.failed")}
           </p>
         )}
       </CardContent>

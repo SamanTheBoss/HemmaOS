@@ -19,7 +19,9 @@ export function AuthGuard({ children }: { children: React.ReactNode }) {
     if (loading) return;
 
     if (setupComplete === false) {
-      if (!isPublicPage) router.replace("/setup");
+      // Setup not finished: always land on /setup, even from /login, so a
+      // fresh box can never get stuck on the login form with no password yet.
+      if (pathname !== "/setup") router.replace("/setup");
       return;
     }
 

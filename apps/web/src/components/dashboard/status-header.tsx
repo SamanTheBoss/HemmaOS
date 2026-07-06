@@ -2,12 +2,14 @@
 
 import { CheckCircle2, AlertTriangle, XCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useI18n } from "@/lib/i18n-context";
 
 interface StatusHeaderProps {
   status: string;
 }
 
 export function StatusHeader({ status }: StatusHeaderProps) {
+  const { t } = useI18n();
   const isHealthy = status === "HEALTHY";
   const isDegraded = status === "DEGRADED";
 
@@ -30,15 +32,15 @@ export function StatusHeader({ status }: StatusHeaderProps) {
       <div>
         <h1 className="text-xl font-bold tracking-tight text-white">
           {isHealthy
-            ? "Ditt hem är säkrat"
+            ? t("dashboard.healthy")
             : isDegraded
-              ? "Något behöver uppmärksamhet"
-              : "Systemet har problem"}
+              ? t("dashboard.degraded")
+              : t("dashboard.unhealthy")}
         </h1>
         <p className="text-sm text-slate-400 mt-0.5">
           {isHealthy
-            ? "Alla tjänster körs som de ska."
-            : "Kontrollera inställningarna."}
+            ? t("dashboard.healthy.sub")
+            : t("dashboard.degraded.sub")}
         </p>
       </div>
     </div>

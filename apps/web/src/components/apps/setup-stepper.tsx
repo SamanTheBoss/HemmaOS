@@ -13,6 +13,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { api } from "@/lib/api";
 import type { AppDefinition } from "@/lib/app-definitions";
+import { useI18n } from "@/lib/i18n-context";
 
 interface SetupStepperProps {
   app: AppDefinition;
@@ -29,6 +30,7 @@ export function SetupStepper({
   onOpenChange,
   onComplete,
 }: SetupStepperProps) {
+  const { t } = useI18n();
   const [step, setStep] = useState<Step>("config");
   const [env, setEnv] = useState<Record<string, string>>({});
   const [resultUrl, setResultUrl] = useState("");
@@ -65,7 +67,9 @@ export function SetupStepper({
       <DialogContent className="max-h-[90dvh] overflow-y-auto">
         {step === "config" && (
           <>
-            <DialogTitle>Installera {app.name}</DialogTitle>
+            <DialogTitle>
+              {t("apps.install")} {app.name}
+            </DialogTitle>
             <DialogDescription>{app.description}</DialogDescription>
 
             {error && (
@@ -93,49 +97,50 @@ export function SetupStepper({
               </div>
             ) : (
               <p className="text-sm text-slate-400 mt-4">
-                Inga inställningar krävs. Appen är redo att installeras.
+                {t("apps.no.config")}
               </p>
             )}
 
             <Button onClick={handleInstall} className="w-full mt-6">
-              Installera {app.name}
+              {t("apps.install")} {app.name}
             </Button>
           </>
         )}
 
         {step === "deploying" && (
           <div className="flex flex-col items-center gap-4 py-8">
-            <DialogTitle className="sr-only">Installerar...</DialogTitle>
+            <DialogTitle className="sr-only">{t("apps.installing")}</DialogTitle>
             <Loader2 className="h-12 w-12 animate-spin text-violet" />
             <p className="text-lg font-semibold text-white">
-              HemmaOS konfigurerar din app...
+              {t("apps.installing")}
             </p>
             <p className="text-sm text-slate-500">
-              Detta kan ta en liten stund
+              {t("apps.installing.wait")}
             </p>
           </div>
         )}
 
         {step === "done" && (
           <div className="flex flex-col items-center gap-4 py-6">
-            <DialogTitle className="sr-only">Klart!</DialogTitle>
+            <DialogTitle className="sr-only">{t("apps.done")}</DialogTitle>
             <CheckCircle2 className="h-16 w-16 text-emerald-400" />
-            <h2 className="text-xl font-bold tracking-tight text-white">Klart!</h2>
+            <h2 className="text-xl font-bold tracking-tight text-white">
+              {t("apps.done")}
+            </h2>
             <p className="text-sm text-slate-400 text-center">
-              {app.name} är nu installerat och redo att användas.
+              {t("apps.done.message", { name: app.name })}
             </p>
 
             {app.mobileApp && (
               <p className="text-xs text-slate-400 text-center bg-white/[.03] border border-line rounded-xl p-3">
-                Ladda ner mobilappen <strong>{app.mobileApp}</strong> och
-                anslut med adressen ovan.
+                {t("apps.done.mobile", { app: app.mobileApp })}
               </p>
             )}
 
             <Button asChild className="w-full mt-2">
               <a href={resultUrl} target="_blank" rel="noopener noreferrer">
                 <ExternalLink className="h-4 w-4" />
-                Gå till min app
+                {t("apps.goto")}
               </a>
             </Button>
           </div>
