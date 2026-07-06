@@ -3,7 +3,7 @@ import { Providers } from "@/components/layout/providers";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Home_OS",
+  title: "HemmaOS",
   description: "Ditt hem, din data, din kontroll.",
 };
 

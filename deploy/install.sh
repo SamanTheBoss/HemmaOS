@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Home_OS Install Script
+# HemmaOS Install Script
 # Sets up the directory structure and copies app templates to the host
 
-echo "=== Home_OS Installation ==="
+echo "=== HemmaOS Installation ==="
 
 # Run from the deploy/ directory regardless of where the script was invoked,
 # so the relative `apps/<app>/...` and `Caddyfile` copies resolve.
@@ -43,5 +43,5 @@ fi
 
 echo ""
 echo "=== Installation complete ==="
-echo "Start Home_OS with: docker compose -f docker-compose.yml up -d"
+echo "Start HemmaOS with: docker compose -f docker-compose.yml up -d"
 echo ""

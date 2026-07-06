@@ -36,7 +36,7 @@ export default function LoginPage() {
           <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-blue-600 text-white shadow-lg">
             <Server className="h-8 w-8" />
           </div>
-          <h1 className="text-2xl font-bold text-gray-900">Home_OS</h1>
+          <h1 className="text-2xl font-bold text-gray-900">HemmaOS</h1>
         </div>
 
         <Card className="border-0 shadow-lg">

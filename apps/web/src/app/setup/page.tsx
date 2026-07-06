@@ -60,7 +60,7 @@ export default function SetupPage() {
     try {
       await setup({
         password,
-        systemName: systemName || "Home_OS",
+        systemName: systemName || "HemmaOS",
         locale: language,
         timezone,
       });
@@ -194,13 +194,12 @@ export default function SetupPage() {
           {steps.map((_, i) => (
             <div
               key={i}
-              className={`h-2 rounded-full transition-all ${
-                i === step
+              className={`h-2 rounded-full transition-all ${i === step
                   ? "w-8 bg-blue-600"
                   : i < step
                     ? "w-2 bg-blue-400"
                     : "w-2 bg-gray-200"
-              }`}
+                }`}
             />
           ))}
         </div>

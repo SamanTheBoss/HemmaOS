@@ -1,6 +1,6 @@
-# Testa Home_OS end-to-end (WSL2 + Docker Desktop)
+# Testa HemmaOS end-to-end (WSL2 + Docker Desktop)
 
-Home_OS-backenden pratar med **Linux** (`df`, `free`), **Docker-socketen**
+HemmaOS-backenden pratar med **Linux** (`df`, `free`), **Docker-socketen**
 (`/var/run/docker.sock`), **Tailscale** och `sudo`. Inget av det finns på ren
 Windows — därför testar vi i **WSL2 + Docker Desktop**, vilket ligger närmast den
 riktiga hårdvaran (Raspberry Pi / mini-PC).
@@ -37,16 +37,19 @@ Bäst för att jobba med MuradiBox-designen. Vill du ha riktig data → nivå 2.
 ## Nivå 2 — Full stack i WSL2 (setup → dashboard → logs)
 
 ### Engångs-förberedelse
+
 1. **Installera WSL2:** i PowerShell (admin) `wsl --install`, starta om.
 2. **Docker Desktop:** installera → *Settings → Resources → WSL integration* →
    slå på för din distro. Verifiera i WSL: `docker ps` ska svara.
 3. **Klona repot i WSL-filsystemet** (inte `/mnt/c/...` — dålig prestanda och
    socket-strul):
+
    ```bash
-   git clone <repo> ~/home_os && cd ~/home_os
+   git clone <repo> ~/HemmaOS && cd ~/HemmaOS
    ```
 
 ### Kör
+
 ```bash
 # 1. Skapa host-strukturen + kopiera app-mallar + data-kataloger
 bash deploy/install.sh          # skapar /opt/home-os/{config,data,apps}
@@ -55,7 +58,7 @@ bash deploy/install.sh          # skapar /opt/home-os/{config,data,apps}
 docker compose -f deploy/docker-compose.dev.yml up --build
 ```
 
-Öppna **http://localhost:3000**. Flödet start-to-end:
+Öppna **<http://localhost:3000>**. Flödet start-to-end:
 
 | Steg | Vad du testar |
 |------|---------------|
@@ -80,10 +83,12 @@ lättaste appen (**Vaultwarden** = en container):
 3. Steg 2 skriver `.env` till `/opt/home-os/apps/vaultwarden/` och kör
    `docker compose up -d`.
 4. Verifiera på hosten:
+
    ```bash
    docker ps | grep vaultwarden
    ```
-5. Nå appen direkt på **http://localhost:8080** (i dev går vi förbi Caddy).
+
+5. Nå appen direkt på **<http://localhost:8080>** (i dev går vi förbi Caddy).
 
 Fungerar det → hela install-pipelinen (env-skrivning → compose → status)
 är verifierad. AdGuard är näst lättast; Immich/Jellyfin drar stora images.
@@ -96,15 +101,17 @@ Fungerar det → hela install-pipelinen (env-skrivning → compose → status)
 |----------|---------------------|--------|
 | **Fjärrsupport-toggle** | Fel / "ej konfigurerad" om ingen nyckel | Ingen `tailscale`-binär i containern; nyckeln sätts vid riktig install (se nedan) |
 | **Fjärråtkomst (Tailscale)** | Visar "ej installerad" | Ingen tailscale i dev-containern |
-| **Starta om Home_OS** | Gör inget / fejlar tyst | Ingen `sudo`/host-init i containern (bra — du vill inte starta om laptopen) |
+| **Starta om HemmaOS** | Gör inget / fejlar tyst | Ingen `sudo`/host-init i containern (bra — du vill inte starta om laptopen) |
 | **"Öppna app"-knapp** | Länkar till `https://<tailscale-domän>/...` | Använd published port direkt i dev (t.ex. `:8080`) |
 | **`df`/`free`-siffror** | Containerns vy, inte hostens | Host-metrics kräver host-mounts; testar bara UI:t |
 
 Vill du testa **Fjärrsupport** på riktigt: lägg din Tailscale auth-key i env
 och starta om stacken:
+
 ```bash
 TAILSCALE_SUPPORT_KEY=tskey-auth-xxxx docker compose -f deploy/docker-compose.dev.yml up --build
 ```
+
 (Support är **av som default** — se open source-modellen i `Claude.md`.)
 
 ---

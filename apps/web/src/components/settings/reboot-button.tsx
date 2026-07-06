@@ -34,7 +34,7 @@ export function RebootButton() {
         onClick={() => setOpen(true)}
       >
         <RotateCcw className="h-4 w-4" />
-        Starta om Home_OS
+        Starta om HemmaOS
       </Button>
 
       <Dialog open={open} onOpenChange={setOpen}>

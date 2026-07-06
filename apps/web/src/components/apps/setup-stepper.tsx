@@ -108,7 +108,7 @@ export function SetupStepper({
             <DialogTitle className="sr-only">Installerar...</DialogTitle>
             <Loader2 className="h-12 w-12 animate-spin text-blue-500" />
             <p className="text-lg font-medium text-gray-700">
-              Home_OS konfigurerar din app...
+              HemmaOS konfigurerar din app...
             </p>
             <p className="text-sm text-gray-400">
               Detta kan ta en liten stund
