@@ -8,7 +8,10 @@ COPY pnpm-lock.yaml pnpm-workspace.yaml package.json .npmrc ./
 COPY tsconfig.base.json turbo.json ./
 COPY packages/shared packages/shared
 COPY apps/web apps/web
-ARG NEXT_PUBLIC_API_URL=http://localhost:4000
+# Intentionally NOT baking a fixed NEXT_PUBLIC_API_URL. The client derives the
+# API base from window.location at runtime (apps/web/src/lib/api.ts), so the same
+# image works on any IP/hostname. Pass this ARG only to force a fixed override.
+ARG NEXT_PUBLIC_API_URL=
 ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL
 RUN pnpm install --frozen-lockfile
 RUN pnpm turbo build --filter=@home-os/web
