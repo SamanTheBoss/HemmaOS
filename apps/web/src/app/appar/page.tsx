@@ -12,6 +12,7 @@ interface AppState {
   installed: boolean;
   running: boolean;
   url: string | null;
+  port?: number;
 }
 
 export default function ApparPage() {
@@ -29,6 +30,7 @@ export default function ApparPage() {
           installed: app.installed,
           running: app.running,
           url: app.url,
+          port: app.port,
         };
       }
       setAppStates(states);
@@ -43,13 +45,19 @@ export default function ApparPage() {
     loadApps();
   }, [loadApps]);
 
-  function handleComplete(url: string) {
-    if (selectedApp) {
-      setAppStates((prev) => ({
-        ...prev,
-        [selectedApp.id]: { installed: true, running: true, url },
-      }));
+  function handleComplete() {
+    // Refresh from the API so the new app's real port/status are picked up.
+    loadApps();
+  }
+
+  async function handleUninstall(app: AppDefinition) {
+    if (!window.confirm(t("apps.uninstall.confirm", { name: app.name }))) return;
+    try {
+      await api.uninstallApp(app.id);
+    } catch {
+      // ignore — reload reflects the real state
     }
+    loadApps();
   }
 
   if (loading) {
@@ -73,8 +81,9 @@ export default function ApparPage() {
               key={app.id}
               app={app}
               installed={state?.installed ?? false}
-              url={state?.url ?? undefined}
+              port={state?.port}
               onInstall={() => setSelectedApp(app)}
+              onUninstall={() => handleUninstall(app)}
             />
           );
         })}

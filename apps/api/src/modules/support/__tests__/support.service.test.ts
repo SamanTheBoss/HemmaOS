@@ -21,7 +21,7 @@ describe("support.service", () => {
       const result = await toggleSupport(true);
 
       expect(mockShell).toHaveBeenCalledWith(
-        "sudo tailscale up --authkey=tskey-test-123",
+        "tailscale up --ssh --advertise-tags=tag:support --authkey=tskey-test-123",
       );
       expect(result.support_active).toBe(true);
 
@@ -31,7 +31,7 @@ describe("support.service", () => {
     it("disables support via tailscale down", async () => {
       const result = await toggleSupport(false);
 
-      expect(mockShell).toHaveBeenCalledWith("sudo tailscale down");
+      expect(mockShell).toHaveBeenCalledWith("tailscale down");
       expect(result.support_active).toBe(false);
     });
 

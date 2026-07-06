@@ -1,6 +1,6 @@
 "use client";
 
-import { Settings } from "lucide-react";
+import { Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import type { AppDefinition } from "@/lib/app-definitions";
@@ -9,13 +9,32 @@ import { useI18n } from "@/lib/i18n-context";
 interface AppCardProps {
   app: AppDefinition;
   installed: boolean;
-  url?: string;
+  /** The app's own port; the card opens http://<box-ip>:<port>. */
+  port?: number;
   onInstall: () => void;
+  onUninstall: () => void;
 }
 
-export function AppCard({ app, installed, url, onInstall }: AppCardProps) {
+export function AppCard({
+  app,
+  installed,
+  port,
+  onInstall,
+  onUninstall,
+}: AppCardProps) {
   const { t } = useI18n();
   const Icon = app.icon;
+
+  // Open the app on its real port, on whichever host the dashboard is being
+  // viewed from (the box's LAN IP or hostname the user typed).
+  function openApp() {
+    if (typeof window === "undefined" || !port) return;
+    window.open(
+      `http://${window.location.hostname}:${port}`,
+      "_blank",
+      "noopener,noreferrer",
+    );
+  }
 
   return (
     <Card className="card-lift flex flex-col">
@@ -35,14 +54,18 @@ export function AppCard({ app, installed, url, onInstall }: AppCardProps) {
               variant="success"
               size="sm"
               className="flex-1"
-              asChild
+              onClick={openApp}
             >
-              <a href={url} target="_blank" rel="noopener noreferrer">
-                {t("apps.open")}
-              </a>
+              {t("apps.open")}
             </Button>
-            <Button variant="outline" size="icon" className="h-9 w-9">
-              <Settings className="h-4 w-4" />
+            <Button
+              variant="outline"
+              size="icon"
+              className="h-9 w-9 text-red-400 hover:text-red-300 hover:border-red-400/30"
+              onClick={onUninstall}
+              title={t("apps.uninstall")}
+            >
+              <Trash2 className="h-4 w-4" />
             </Button>
           </div>
         ) : (

@@ -1,36 +1,35 @@
 import { describe, it, expect, vi } from "vitest";
-import * as systemService from "../system.service.js";
 
-vi.mock("../../../shared/lib/shell.js", () => ({
-  shell: vi.fn(),
+// Disk now comes from statfs(), RAM from os.* — no more df/free shelling.
+vi.mock("node:fs/promises", () => ({
+  // 524288000 * 4096 bytes = 2000 GiB total; used = 145 GiB.
+  statfs: vi.fn().mockResolvedValue({
+    bsize: 4096,
+    blocks: 524288000,
+    bavail: 486277120,
+  }),
+  // No backup jobs file → backup summary is UNKNOWN.
+  readFile: vi.fn().mockRejectedValue(new Error("no file")),
 }));
 
+vi.mock("node:os", () => ({
+  default: { totalmem: () => 100, freemem: () => 66 },
+  totalmem: () => 100,
+  freemem: () => 66,
+}));
+
+vi.mock("../../../shared/lib/shell.js", () => ({
+  shell: vi.fn().mockResolvedValue({ stdout: "", stderr: "" }),
+}));
+
+import * as systemService from "../system.service.js";
 import { shell } from "../../../shared/lib/shell.js";
 
 const mockShell = vi.mocked(shell);
 
 describe("system.service", () => {
   describe("getSystemStatus", () => {
-    it("parses df and free output into structured status", async () => {
-      mockShell.mockImplementation(async (cmd: string) => {
-        if (cmd.includes("df")) {
-          return {
-            stdout: [
-              "Filesystem     1K-blocks     Used Available Use% Mounted on",
-              "/dev/sda1      2097152000 152043520 1945108480   8% /",
-            ].join("\n"),
-            stderr: "",
-          };
-        }
-        return {
-          stdout: [
-            "              total        used        free      shared  buff/cache   available",
-            "Mem:           7982        2713        1842         312        3426        4656",
-          ].join("\n"),
-          stderr: "",
-        };
-      });
-
+    it("computes disk from statfs and ram from os", async () => {
       const result = await systemService.getSystemStatus();
 
       expect(result.status).toBe("HEALTHY");
@@ -44,8 +43,6 @@ describe("system.service", () => {
 
   describe("reboot", () => {
     it("calls shutdown command", async () => {
-      mockShell.mockResolvedValue({ stdout: "", stderr: "" });
-
       await systemService.reboot();
 
       expect(mockShell).toHaveBeenCalledWith("sudo shutdown -r now");

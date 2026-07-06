@@ -1,54 +1,48 @@
-import { readFile } from "node:fs/promises";
+import { readFile, statfs } from "node:fs/promises";
+import os from "node:os";
 import { shell } from "../../shared/lib/shell.js";
 import { docker } from "../../shared/lib/docker.js";
 import { APP_DEFINITIONS } from "../apps/apps.definitions.js";
 import { BACKUP_JOBS_FILE } from "../backup/backup.paths.js";
 import type { SystemStatusResponse } from "./system.types.js";
 
-function parseDfOutput(stdout: string): {
+// Where the family's data lives. statfs() on this path reports the *host*
+// filesystem it is bind-mounted from — the number that actually matters —
+// instead of the container's ephemeral overlay layer.
+const DATA_PATH = "/opt/hemmaos";
+
+function formatGB(bytes: number): string {
+  return `${Math.round(bytes / 1024 / 1024 / 1024)}GB`;
+}
+
+// Read disk usage directly from the filesystem — no shelling out to `df`,
+// which is unreliable inside a minimal (busybox) container.
+async function getDisk(): Promise<{
   total: string;
   used: string;
   percent: number;
-} {
-  const lines = stdout.split("\n").slice(1);
-  let totalBytes = 0;
-  let usedBytes = 0;
-
-  for (const line of lines) {
-    const parts = line.trim().split(/\s+/);
-    if (parts.length < 4) continue;
-    const size = parseInt(parts[1], 10);
-    const used = parseInt(parts[2], 10);
-    if (isNaN(size) || isNaN(used)) continue;
-    totalBytes += size;
-    usedBytes += used;
+}> {
+  try {
+    const stats = await statfs(DATA_PATH);
+    const total = stats.blocks * stats.bsize;
+    const free = stats.bavail * stats.bsize;
+    const used = total - free;
+    return {
+      total: formatGB(total),
+      used: formatGB(used),
+      percent: total > 0 ? Math.round((used / total) * 1000) / 10 : 0,
+    };
+  } catch (err) {
+    console.warn("system status: statfs failed:", err);
+    return { total: "0GB", used: "0GB", percent: 0 };
   }
-
-  const totalGB = Math.round(totalBytes / 1024 / 1024);
-  const usedGB = Math.round(usedBytes / 1024 / 1024);
-  const percent =
-    totalBytes > 0
-      ? Math.round((usedBytes / totalBytes) * 1000) / 10
-      : 0;
-
-  return {
-    total: `${totalGB}GB`,
-    used: `${usedGB}GB`,
-    percent,
-  };
 }
 
-function parseMemOutput(stdout: string): { percent: number } {
-  const lines = stdout.split("\n");
-  const memLine = lines.find((l) => l.startsWith("Mem:"));
-  if (!memLine) return { percent: 0 };
-
-  const parts = memLine.trim().split(/\s+/);
-  const total = parseInt(parts[1], 10);
-  const used = parseInt(parts[2], 10);
-
-  if (isNaN(total) || isNaN(used) || total === 0) return { percent: 0 };
-
+// RAM from os.* — reflects the host, no `free` binary required.
+function getRam(): { percent: number } {
+  const total = os.totalmem();
+  if (total <= 0) return { percent: 0 };
+  const used = total - os.freemem();
   return { percent: Math.round((used / total) * 100) };
 }
 
@@ -122,20 +116,16 @@ async function getContainerHealth(): Promise<"HEALTHY" | "DEGRADED" | "UNHEALTHY
 }
 
 export async function getSystemStatus(): Promise<SystemStatusResponse> {
-  const [dfResult, memResult, containerHealth, backup] = await Promise.all([
-    shell("df -k --total"),
-    shell("free -m"),
+  const [disk, containerHealth, backup] = await Promise.all([
+    getDisk(),
     getContainerHealth(),
     getBackupSummary(),
   ]);
 
-  const disk = parseDfOutput(dfResult.stdout);
-  const ram = parseMemOutput(memResult.stdout);
-
   return {
     status: containerHealth,
     disk,
-    ram,
+    ram: getRam(),
     backup,
   };
 }

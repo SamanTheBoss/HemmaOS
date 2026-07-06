@@ -12,6 +12,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { api } from "@/lib/api";
+import { useI18n } from "@/lib/i18n-context";
 
 interface Container {
   id: string;
@@ -20,6 +21,7 @@ interface Container {
 }
 
 export function LogViewer() {
+  const { t } = useI18n();
   const [containers, setContainers] = useState<Container[]>([]);
   const [selected, setSelected] = useState<string>("");
   const [lines, setLines] = useState<string[]>([]);
@@ -83,14 +85,14 @@ export function LogViewer() {
           <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-slate-700 to-slate-900 border border-line">
             <Terminal className="h-5 w-5 text-emerald-400" />
           </div>
-          <CardTitle>Systemloggar</CardTitle>
+          <CardTitle>{t("settings.logs")}</CardTitle>
         </div>
       </CardHeader>
       <CardContent className="space-y-3">
         <div className="flex gap-2">
           <Select value={selected} onValueChange={setSelected}>
             <SelectTrigger className="flex-1">
-              <SelectValue placeholder="Välj container..." />
+              <SelectValue placeholder={t("settings.logs.select")} />
             </SelectTrigger>
             <SelectContent>
               {containers.map((c) => (
@@ -128,8 +130,8 @@ export function LogViewer() {
           {lines.length === 0 ? (
             <p className="text-slate-500">
               {streaming
-                ? "Väntar på loggar..."
-                : "Välj en container och tryck play."}
+                ? t("settings.logs.waiting")
+                : t("settings.logs.empty")}
             </p>
           ) : (
             lines.map((line, i) => (

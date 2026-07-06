@@ -21,3 +21,5 @@ appsRouter.post(
   validate(appControlRequestSchema),
   appsController.control,
 );
+
+appsRouter.post("/uninstall", appsController.uninstall);

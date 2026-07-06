@@ -6,8 +6,10 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
 import { api } from "@/lib/api";
+import { useI18n } from "@/lib/i18n-context";
 
 export function RemoteAccess() {
+  const { t } = useI18n();
   const [loading, setLoading] = useState(true);
   const [authenticated, setAuthenticated] = useState(false);
   const [running, setRunning] = useState(false);
@@ -84,7 +86,7 @@ export function RemoteAccess() {
           <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-cyan-400 to-teal-600 shadow-lg shadow-teal-500/20">
             <Globe className="h-5 w-5 text-white" />
           </div>
-          <CardTitle>Fjärråtkomst</CardTitle>
+          <CardTitle>{t("settings.remote")}</CardTitle>
         </div>
       </CardHeader>
       <CardContent className="space-y-3">
@@ -97,9 +99,9 @@ export function RemoteAccess() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-slate-300">
-                  Kom åt boxen utanför hemmet
+                  {t("settings.remote.desc")}
                 </p>
-                <p className="text-xs text-slate-500 mt-0.5">Via Tailscale</p>
+                <p className="text-xs text-slate-500 mt-0.5">{t("settings.remote.via")}</p>
               </div>
               <Switch
                 checked={running}
@@ -119,7 +121,7 @@ export function RemoteAccess() {
               <div className="flex items-center gap-2 rounded-xl bg-white/[.03] border border-line p-3">
                 <XCircle className="h-4 w-4 text-slate-500 shrink-0" />
                 <p className="text-xs text-slate-400">
-                  Slå på för att logga in med Tailscale.
+                  {t("settings.remote.off")}
                 </p>
               </div>
             )}
@@ -127,7 +129,7 @@ export function RemoteAccess() {
             {authUrl && (
               <div className="space-y-3">
                 <p className="text-sm text-slate-400">
-                  Logga in med ditt Tailscale-konto:
+                  {t("settings.remote.signin")}
                 </p>
                 <Button asChild className="w-full" size="sm">
                   <a
@@ -136,12 +138,12 @@ export function RemoteAccess() {
                     rel="noopener noreferrer"
                   >
                     <ExternalLink className="h-4 w-4" />
-                    Öppna Tailscale-inloggning
+                    {t("settings.remote.login")}
                   </a>
                 </Button>
                 <div className="flex items-center justify-center gap-2 text-xs text-slate-500">
                   <Loader2 className="h-3 w-3 animate-spin" />
-                  Väntar på inloggning...
+                  {t("settings.remote.waiting")}
                 </div>
               </div>
             )}

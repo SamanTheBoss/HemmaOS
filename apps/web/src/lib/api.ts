@@ -88,6 +88,7 @@ export const api = {
         installed: boolean;
         running: boolean;
         url: string | null;
+        port: number;
         envFields: { key: string; label: string; type: "text" | "password" }[];
       }[];
     }>("/api/apps"),
@@ -104,7 +105,16 @@ export const api = {
       body: JSON.stringify({ app, action }),
     }),
 
+  uninstallApp: (app: string) =>
+    request<{ success: boolean }>("/api/apps/uninstall", {
+      method: "POST",
+      body: JSON.stringify({ app }),
+    }),
+
   // Support
+  getSupportStatus: () =>
+    request<{ configured: boolean }>("/api/system/support/status"),
+
   toggleSupport: (enabled: boolean) =>
     request<{ support_active: boolean }>("/api/system/support/toggle", {
       method: "POST",

@@ -14,7 +14,7 @@ RUN pnpm turbo build --filter=@home-os/api
 # Production image
 FROM node:22-alpine AS runner
 RUN corepack enable && corepack prepare pnpm@latest --activate
-RUN apk add --no-cache rsync rclone docker-cli docker-cli-compose coreutils util-linux procps
+RUN apk add --no-cache rsync rclone docker-cli docker-cli-compose coreutils util-linux procps tailscale
 
 WORKDIR /app
 COPY --from=build /app/package.json /app/pnpm-workspace.yaml /app/pnpm-lock.yaml /app/.npmrc ./

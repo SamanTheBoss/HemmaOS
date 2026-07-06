@@ -15,6 +15,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { BackupWizard } from "./backup-wizard";
 import { api } from "@/lib/api";
+import { useI18n } from "@/lib/i18n-context";
 
 interface BackupJob {
   id: string;
@@ -53,6 +54,7 @@ const SCHEDULE_LABELS: Record<string, string> = {
 };
 
 export function BackupManager() {
+  const { t } = useI18n();
   const [jobs, setJobs] = useState<BackupJob[]>([]);
   const [wizardOpen, setWizardOpen] = useState(false);
   const [runningJob, setRunningJob] = useState<string | null>(null);
@@ -98,18 +100,18 @@ export function BackupManager() {
               <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-cyan-400 to-teal-600 shadow-lg shadow-teal-500/20">
                 <FolderSync className="h-5 w-5 text-white" />
               </div>
-              <CardTitle>Synkronisering</CardTitle>
+              <CardTitle>{t("settings.sync")}</CardTitle>
             </div>
             <Button size="sm" onClick={() => setWizardOpen(true)}>
               <Plus className="h-4 w-4" />
-              Ny
+              {t("settings.sync.new")}
             </Button>
           </div>
         </CardHeader>
         <CardContent>
           {jobs.length === 0 ? (
             <p className="text-sm text-slate-500 text-center py-4">
-              Inga synkjobb konfigurerade. Tryck &quot;Ny&quot; för att börja.
+              {t("settings.sync.empty")}
             </p>
           ) : (
             <div className="space-y-3">

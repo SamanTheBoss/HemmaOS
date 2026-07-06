@@ -74,6 +74,8 @@ export interface AppWithStatus {
   installed: boolean;
   running: boolean;
   url: string | null;
+  /** The app's own port. The frontend opens http://<box-ip>:<port>. */
+  port: number;
   envFields: { key: string; label: string; type: "text" | "password" }[];
 }
 
@@ -104,12 +106,27 @@ export async function listApps(): Promise<AppWithStatus[]> {
       description: def.description,
       installed,
       running,
-      url: installed
-        ? `https://${tailscaleDomain}/${def.name}`
-        : null,
+      // Kept for the Tailscale/Caddy path; the UI opens the direct port.
+      url: installed ? `https://${tailscaleDomain}/${def.name}` : null,
+      port: def.defaultPort,
       envFields: def.envFields,
     };
   });
+}
+
+export async function uninstallApp(app: AppName): Promise<{ success: true }> {
+  const definition = APP_DEFINITIONS[app];
+  if (!definition) {
+    throw new AppError(400, `Unknown app: ${app}`, "UNKNOWN_APP");
+  }
+
+  // Stop and remove the app's containers (keeps the data volumes on disk).
+  await shell(`docker compose -f ${definition.composeFile} down`);
+
+  // Drop its reverse-proxy route now that it's gone.
+  await updateCaddyRoutes();
+
+  return { success: true };
 }
 
 /**

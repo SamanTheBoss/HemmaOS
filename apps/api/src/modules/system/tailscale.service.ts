@@ -59,7 +59,8 @@ export async function startAuth(): Promise<{
   }
 
   return new Promise((resolve) => {
-    const proc = spawn("sudo", ["tailscale", "up"], {
+    // Runs as root inside the container — no `sudo` needed (and none present).
+    const proc = spawn("tailscale", ["up"], {
       stdio: ["pipe", "pipe", "pipe"],
     });
 
@@ -111,5 +112,5 @@ export async function startAuth(): Promise<{
 }
 
 export async function stop(): Promise<void> {
-  await shell("sudo tailscale down");
+  await shell("tailscale down");
 }

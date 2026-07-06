@@ -10,8 +10,10 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog";
 import { api } from "@/lib/api";
+import { useI18n } from "@/lib/i18n-context";
 
 export function RebootButton() {
+  const { t } = useI18n();
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
 
@@ -34,14 +36,14 @@ export function RebootButton() {
         onClick={() => setOpen(true)}
       >
         <RotateCcw className="h-4 w-4" />
-        Starta om HemmaOS
+        {t("settings.reboot")}
       </Button>
 
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent>
-          <DialogTitle>Starta om?</DialogTitle>
+          <DialogTitle>{t("settings.reboot.confirm")}</DialogTitle>
           <DialogDescription>
-            Alla tjänster kommer att stoppas tillfälligt. Är du säker?
+            {t("settings.reboot.warning")}
           </DialogDescription>
           <div className="flex gap-3 mt-4">
             <Button
@@ -49,7 +51,7 @@ export function RebootButton() {
               className="flex-1"
               onClick={() => setOpen(false)}
             >
-              Avbryt
+              {t("settings.reboot.cancel")}
             </Button>
             <Button
               variant="destructive"
@@ -57,7 +59,7 @@ export function RebootButton() {
               onClick={handleReboot}
               disabled={loading}
             >
-              {loading ? "Startar om..." : "Starta om"}
+              {loading ? `${t("settings.reboot.action")}...` : t("settings.reboot.action")}
             </Button>
           </div>
         </DialogContent>
