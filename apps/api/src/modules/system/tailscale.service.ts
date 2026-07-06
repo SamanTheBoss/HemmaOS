@@ -25,26 +25,17 @@ export async function getStatus(): Promise<TailscaleStatus> {
       hostname,
       ip,
     };
-  } catch (err) {
-    // Check if tailscale binary exists at all
-    try {
-      await shell("which tailscale");
-      return {
-        installed: true,
-        running: false,
-        authenticated: false,
-        hostname: null,
-        ip: null,
-      };
-    } catch {
-      return {
-        installed: false,
-        running: false,
-        authenticated: false,
-        hostname: null,
-        ip: null,
-      };
-    }
+  } catch {
+    // `tailscale status` only fails when the daemon isn't reachable. Whether or
+    // not the binary exists, remote access can't be used here — report it as
+    // unavailable so the UI greys the whole control out ("not supported").
+    return {
+      installed: false,
+      running: false,
+      authenticated: false,
+      hostname: null,
+      ip: null,
+    };
   }
 }
 

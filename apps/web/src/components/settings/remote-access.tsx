@@ -11,6 +11,8 @@ import { useI18n } from "@/lib/i18n-context";
 export function RemoteAccess() {
   const { t } = useI18n();
   const [loading, setLoading] = useState(true);
+  // Whether Tailscale is actually usable on this box (daemon reachable).
+  const [available, setAvailable] = useState(false);
   const [authenticated, setAuthenticated] = useState(false);
   const [running, setRunning] = useState(false);
   const [hostname, setHostname] = useState<string | null>(null);
@@ -44,11 +46,12 @@ export function RemoteAccess() {
     setLoading(true);
     try {
       const status = await api.getTailscaleStatus();
+      setAvailable(status.installed);
       setAuthenticated(status.authenticated);
       setRunning(status.running);
       setHostname(status.hostname);
     } catch {
-      // offline or tailscale not installed
+      setAvailable(false);
     } finally {
       setLoading(false);
     }
@@ -77,6 +80,30 @@ export function RemoteAccess() {
     } finally {
       setToggling(false);
     }
+  }
+
+  // Not usable on this box → grey the whole card out and say so.
+  if (!loading && !available) {
+    return (
+      <Card className="opacity-60">
+        <CardHeader>
+          <div className="flex items-center gap-3">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-slate-700/60 border border-line">
+              <Globe className="h-5 w-5 text-slate-400" />
+            </div>
+            <CardTitle className="text-slate-300">{t("settings.remote")}</CardTitle>
+          </div>
+        </CardHeader>
+        <CardContent>
+          <div className="flex items-center gap-2 rounded-xl bg-white/[.03] border border-line p-3">
+            <XCircle className="h-4 w-4 text-slate-500 shrink-0" />
+            <p className="text-xs text-slate-400">
+              {t("settings.remote.unsupported")}
+            </p>
+          </div>
+        </CardContent>
+      </Card>
+    );
   }
 
   return (
