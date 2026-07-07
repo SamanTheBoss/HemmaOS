@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { validate } from "../../shared/middleware/validate.js";
-import { supportToggleRequestSchema } from "@home-os/shared";
+import { supportToggleRequestSchema } from "@hemmaos/shared";
 import * as supportController from "./support.controller.js";
 
 export const supportRouter = Router();

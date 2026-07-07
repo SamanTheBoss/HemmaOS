@@ -45,7 +45,9 @@ describe("system.service", () => {
     it("calls shutdown command", async () => {
       await systemService.reboot();
 
-      expect(mockShell).toHaveBeenCalledWith("sudo shutdown -r now");
+      expect(mockShell).toHaveBeenCalledWith(
+        "docker run --rm --privileged --pid=host justincormack/nsenter1 /sbin/reboot",
+      );
     });
   });
 });

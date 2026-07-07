@@ -1,1 +1,1 @@
-export type { SystemStatusResponse, RebootResponse } from "@home-os/shared";
+export type { SystemStatusResponse, RebootResponse } from "@hemmaos/shared";

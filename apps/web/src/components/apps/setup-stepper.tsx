@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { CheckCircle2, Loader2, ExternalLink } from "lucide-react";
 import {
   Dialog,
@@ -11,6 +11,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Progress } from "@/components/ui/progress";
 import { api } from "@/lib/api";
 import type { AppDefinition } from "@/lib/app-definitions";
 import { useI18n } from "@/lib/i18n-context";
@@ -30,25 +31,56 @@ export function SetupStepper({
   onOpenChange,
   onComplete,
 }: SetupStepperProps) {
-  const { t } = useI18n();
+  const { t, locale } = useI18n();
+  const description = locale === "sv" ? app.description : app.descriptionEn;
+  // Open the freshly-installed app on its real port, on the host the dashboard
+  // is viewed from — not the Caddy/localhost URL from the install response.
+  const appUrl =
+    typeof window !== "undefined"
+      ? `http://${window.location.hostname}:${app.port}`
+      : "#";
   const [step, setStep] = useState<Step>("config");
   const [env, setEnv] = useState<Record<string, string>>({});
-  const [resultUrl, setResultUrl] = useState("");
+  const [, setResultUrl] = useState("");
+  const [progress, setProgress] = useState(0);
   const [error, setError] = useState<string | null>(null);
+  const progressTimer = useRef<ReturnType<typeof setInterval> | null>(null);
 
   function handleEnvChange(key: string, value: string) {
     setEnv((prev) => ({ ...prev, [key]: value }));
   }
 
+  // Smoothly climb toward 90% while the download/deploy runs (we don't get
+  // byte-level progress from the backend yet), then snap to 100% on completion.
+  function startProgress() {
+    setProgress(0);
+    progressTimer.current = setInterval(() => {
+      setProgress((p) => {
+        if (p >= 90) return p;
+        const step = p < 50 ? 3 : p < 75 ? 1.4 : 0.5;
+        return Math.min(90, p + step);
+      });
+    }, 400);
+  }
+
+  function stopProgress() {
+    if (progressTimer.current) clearInterval(progressTimer.current);
+    progressTimer.current = null;
+  }
+
   async function handleInstall() {
     setStep("deploying");
     setError(null);
+    startProgress();
     try {
       const result = await api.installApp(app.id, env);
       setResultUrl(result.url);
+      stopProgress();
+      setProgress(100);
       onComplete(result.url);
       setStep("done");
     } catch (err) {
+      stopProgress();
       setError(err instanceof Error ? err.message : "Något gick fel");
       setStep("config");
     }
@@ -56,6 +88,8 @@ export function SetupStepper({
 
   function handleClose() {
     if (step === "deploying") return;
+    stopProgress();
+    setProgress(0);
     setStep("config");
     setEnv({});
     setError(null);
@@ -70,7 +104,7 @@ export function SetupStepper({
             <DialogTitle>
               {t("apps.install")} {app.name}
             </DialogTitle>
-            <DialogDescription>{app.description}</DialogDescription>
+            <DialogDescription>{description}</DialogDescription>
 
             {error && (
               <p className="text-sm text-red-300 bg-red-400/10 border border-red-400/20 rounded-xl p-3">
@@ -114,9 +148,15 @@ export function SetupStepper({
             <p className="text-lg font-semibold text-white">
               {t("apps.installing")}
             </p>
-            <p className="text-sm text-slate-500">
-              {t("apps.installing.wait")}
-            </p>
+            <div className="w-full max-w-xs">
+              <Progress value={progress} />
+              <div className="mt-2 flex items-center justify-between text-xs">
+                <span className="text-slate-500">{t("apps.installing.wait")}</span>
+                <span className="font-mono text-slate-400">
+                  {Math.round(progress)}%
+                </span>
+              </div>
+            </div>
           </div>
         )}
 
@@ -138,7 +178,7 @@ export function SetupStepper({
             )}
 
             <Button asChild className="w-full mt-2">
-              <a href={resultUrl} target="_blank" rel="noopener noreferrer">
+              <a href={appUrl} target="_blank" rel="noopener noreferrer">
                 <ExternalLink className="h-4 w-4" />
                 {t("apps.goto")}
               </a>

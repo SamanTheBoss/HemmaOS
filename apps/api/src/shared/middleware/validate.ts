@@ -1,6 +1,6 @@
 import type { Request, Response, NextFunction } from "express";
 import { type ZodSchema, ZodError } from "zod";
-import type { ApiErrorResponse } from "@home-os/shared";
+import type { ApiErrorResponse } from "@hemmaos/shared";
 
 export function validate(schema: ZodSchema) {
   return (req: Request, res: Response, next: NextFunction): void => {

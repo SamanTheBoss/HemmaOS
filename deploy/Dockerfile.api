@@ -9,7 +9,7 @@ COPY tsconfig.base.json turbo.json ./
 COPY packages/shared packages/shared
 COPY apps/api apps/api
 RUN pnpm install --frozen-lockfile
-RUN pnpm turbo build --filter=@home-os/api
+RUN pnpm turbo build --filter=@hemmaos/api
 
 # Production image
 FROM node:22-alpine AS runner

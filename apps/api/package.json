@@ -1,5 +1,5 @@
 {
-  "name": "@home-os/api",
+  "name": "@hemmaos/api",
   "version": "0.0.1",
   "private": true,
   "type": "module",
@@ -10,7 +10,7 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "@home-os/shared": "workspace:*",
+    "@hemmaos/shared": "workspace:*",
     "cors": "^2.8.5",
     "dockerode": "^4.0.7",
     "express": "^5.1.0",

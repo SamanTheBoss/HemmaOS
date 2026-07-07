@@ -1,5 +1,5 @@
 {
-  "name": "home-os",
+  "name": "hemmaos",
   "private": true,
   "scripts": {
     "dev": "turbo dev",
@@ -13,6 +13,12 @@
   },
   "packageManager": "pnpm@10.12.1",
   "pnpm": {
-    "onlyBuiltDependencies": ["esbuild", "sharp", "cpu-features", "ssh2", "protobufjs"]
+    "onlyBuiltDependencies": [
+      "esbuild",
+      "sharp",
+      "cpu-features",
+      "ssh2",
+      "protobufjs"
+    ]
   }
 }

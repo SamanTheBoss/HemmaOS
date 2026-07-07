@@ -145,7 +145,11 @@ export const api = {
     request<{ logs: string }>(`/api/logs/${container}?tail=${tail}`),
 
   streamLogsUrl: (container: string) =>
-    `${resolveApiBase()}/api/logs/${container}/stream`,
+    // EventSource can't send an Authorization header, so pass the token as a
+    // query param (the API accepts it there for this endpoint).
+    `${resolveApiBase()}/api/logs/${container}/stream?token=${encodeURIComponent(
+      authToken ?? "",
+    )}`,
 
   // Backup
   getBackupJobs: () =>

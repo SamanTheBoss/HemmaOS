@@ -144,10 +144,10 @@ drops) · 🌐 **WireGuard / Tailscale VPN** (reach your photos & files securely
 pnpm install
 
 # Unit tests (mock shell/docker — run on any OS, incl. Windows)
-pnpm --filter @home-os/api test
+pnpm --filter @hemmaos/api test
 
 # Frontend only, for design work
-pnpm --filter @home-os/web dev        # http://localhost:3000
+pnpm --filter @hemmaos/web dev        # http://localhost:3000
 
 # Full end-to-end (WSL2 + Docker Desktop, or a Linux box)
 bash deploy/install.sh

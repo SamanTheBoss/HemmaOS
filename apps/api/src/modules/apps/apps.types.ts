@@ -5,4 +5,4 @@ export type {
   AppControlAction,
   AppControlRequest,
   AppControlResponse,
-} from "@home-os/shared";
+} from "@hemmaos/shared";

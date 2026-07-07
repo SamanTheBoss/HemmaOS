@@ -3,7 +3,7 @@ import { validate } from "../../shared/middleware/validate.js";
 import {
   appInstallRequestSchema,
   appControlRequestSchema,
-} from "@home-os/shared";
+} from "@hemmaos/shared";
 import * as appsController from "./apps.controller.js";
 
 export const appsRouter = Router();

@@ -20,8 +20,8 @@ git clone https://github.com/SamanTheBoss/HemmaOS.git
 cd HemmaOS
 pnpm install
 
-pnpm --filter @home-os/api test     # unit tests (any OS)
-pnpm --filter @home-os/web dev       # frontend at http://localhost:3000
+pnpm --filter @hemmaos/api test     # unit tests (any OS)
+pnpm --filter @hemmaos/web dev       # frontend at http://localhost:3000
 ```
 
 The monorepo uses **Turborepo + pnpm**:
@@ -44,7 +44,7 @@ For full end-to-end testing (real Docker/Tailscale), see [`deploy/TESTING.md`](d
   gradient, `rounded-2xl` cards). Match the surrounding code's style.
 - **Privacy first:** never add anything that opens the box to the internet by default, or
   that grants standing remote access. Support tunnels are opt-in and self-closing.
-- **TypeScript:** keep `pnpm --filter @home-os/api test` and `tsc --noEmit` green in both
+- **TypeScript:** keep `pnpm --filter @hemmaos/api test` and `tsc --noEmit` green in both
   apps before opening a PR.
 
 ## Adding a new app

@@ -65,6 +65,26 @@ echo "Docker OK: $(docker --version)"
 echo "Compose OK: $(docker compose version | head -n1)"
 
 # ---------------------------------------------------------------------------
+# 0b. mDNS — make the box reachable as http://hemmaos.local (no IP needed)
+#
+# Publishes `hemmaos.local` via Avahi WITHOUT changing the system hostname,
+# so users never have to find or type an IP address.
+# ---------------------------------------------------------------------------
+if command -v apt-get >/dev/null 2>&1; then
+  $SUDO apt-get install -y avahi-daemon avahi-utils || true
+  if [ -f /etc/avahi/avahi-daemon.conf ]; then
+    if grep -qE '^\s*#?\s*host-name=' /etc/avahi/avahi-daemon.conf; then
+      $SUDO sed -i 's/^\s*#\?\s*host-name=.*/host-name=hemmaos/' /etc/avahi/avahi-daemon.conf
+    else
+      echo "host-name=hemmaos" | $SUDO tee -a /etc/avahi/avahi-daemon.conf > /dev/null
+    fi
+    $SUDO systemctl enable --now avahi-daemon 2>/dev/null || true
+    $SUDO systemctl restart avahi-daemon 2>/dev/null || true
+    echo "mDNS: dashboard reachable at http://hemmaos.local (once Caddy is on port 80)"
+  fi
+fi
+
+# ---------------------------------------------------------------------------
 # 1. Directory structure and templates
 # ---------------------------------------------------------------------------
 

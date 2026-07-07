@@ -12,4 +12,4 @@ export type {
   DeleteBackupResponse,
   UsbDevice,
   UsbDevicesResponse,
-} from "@home-os/shared";
+} from "@hemmaos/shared";

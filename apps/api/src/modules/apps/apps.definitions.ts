@@ -6,7 +6,10 @@ export interface AppDefinition {
   description: string;
   containerName: string;
   composeFile: string;
+  /** Host-published port (what the browser opens directly). */
   defaultPort: number;
+  /** Port the app listens on *inside* its container (Caddy upstream target). */
+  internalPort: number;
   envFields: { key: string; label: string; type: "text" | "password" }[];
   /** Reverse proxy path prefix used in the Caddyfile */
   proxyPath: string;
@@ -22,6 +25,7 @@ export const APP_DEFINITIONS: Record<AppName, AppDefinition> = {
     containerName: "immich_server",
     composeFile: "/opt/hemmaos/apps/immich/docker-compose.yml",
     defaultPort: 2283,
+    internalPort: 2283,
     proxyPath: "immich",
     envFields: [
       { key: "ADMIN_PASS", label: "Standardlösenord", type: "password" },
@@ -35,6 +39,7 @@ export const APP_DEFINITIONS: Record<AppName, AppDefinition> = {
     containerName: "jellyfin",
     composeFile: "/opt/hemmaos/apps/jellyfin/docker-compose.yml",
     defaultPort: 8096,
+    internalPort: 8096,
     proxyPath: "jellyfin",
     envFields: [],
   },
@@ -45,6 +50,7 @@ export const APP_DEFINITIONS: Record<AppName, AppDefinition> = {
     containerName: "adguardhome",
     composeFile: "/opt/hemmaos/apps/adguard/docker-compose.yml",
     defaultPort: 3001,
+    internalPort: 3000,
     proxyPath: "adguard",
     envFields: [],
   },
@@ -55,6 +61,7 @@ export const APP_DEFINITIONS: Record<AppName, AppDefinition> = {
     containerName: "vaultwarden",
     composeFile: "/opt/hemmaos/apps/vaultwarden/docker-compose.yml",
     defaultPort: 8080,
+    internalPort: 80,
     proxyPath: "vaultwarden",
     proxyHeaders: { "X-Real-IP": "{remote_host}" },
     envFields: [
@@ -68,6 +75,7 @@ export const APP_DEFINITIONS: Record<AppName, AppDefinition> = {
     containerName: "audiobookshelf",
     composeFile: "/opt/hemmaos/apps/audiobookshelf/docker-compose.yml",
     defaultPort: 13378,
+    internalPort: 80,
     proxyPath: "audiobookshelf",
     envFields: [],
   },

@@ -143,7 +143,9 @@ async function updateCaddyRoutes(): Promise<void> {
       .filter((def) => containerNames.has(def.containerName))
       .map((def) => ({
         path: def.proxyPath,
-        upstream: `http://localhost:${def.defaultPort}`,
+        // Caddy is a container on the shared network → reach the app by its
+        // container name and the port it listens on *inside* the container.
+        upstream: `http://${def.containerName}:${def.internalPort}`,
         extraHeaders: def.proxyHeaders,
       }));
 

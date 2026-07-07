@@ -1,7 +1,7 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  transpilePackages: ["@home-os/shared"],
+  transpilePackages: ["@hemmaos/shared"],
   output: "standalone",
 };
 

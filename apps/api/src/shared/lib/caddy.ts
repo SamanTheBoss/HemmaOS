@@ -32,17 +32,26 @@ export async function generateCaddyfile(
     })
     .join("\n\n");
 
+  // Caddy runs in its own container on the shared `hemmaos` network, so
+  // upstreams must be *container names*, not localhost. Order matters: the
+  // /api route and the per-app routes are matched before the catch-all
+  // handle that serves the dashboard.
   const caddyfile = `{
-    email info@home-os.se
+    email info@hemmaos.se
 }
 
 ${host} {
-    # Frontend Dashboard
-    handle {
-        reverse_proxy http://localhost:3000
+    # Backend API
+    handle_path /api/* {
+        reverse_proxy http://hemmaos-api:4000
     }
 
 ${routeBlocks}
+
+    # Frontend Dashboard (catch-all, matched last)
+    handle {
+        reverse_proxy http://hemmaos-web:3000
+    }
 }
 `;
 

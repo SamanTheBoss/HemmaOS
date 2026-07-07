@@ -131,5 +131,12 @@ export async function getSystemStatus(): Promise<SystemStatusResponse> {
 }
 
 export async function reboot(): Promise<void> {
-  await shell("sudo shutdown -r now");
+  // The API runs in a container, so `shutdown` here would only affect the
+  // container. To reboot the *host*, spawn a one-shot privileged helper that
+  // enters the host's namespaces (PID 1) and triggers the reboot. This works
+  // through the mounted Docker socket without giving the API standing host
+  // privileges. The nsenter1 image is tiny and pulled once.
+  await shell(
+    "docker run --rm --privileged --pid=host justincormack/nsenter1 /sbin/reboot",
+  );
 }

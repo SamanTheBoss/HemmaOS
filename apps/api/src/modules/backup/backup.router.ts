@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { validate } from "../../shared/middleware/validate.js";
-import { createBackupJobRequestSchema } from "@home-os/shared";
+import { createBackupJobRequestSchema } from "@hemmaos/shared";
 import * as backupController from "./backup.controller.js";
 
 export const backupRouter = Router();

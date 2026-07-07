@@ -22,15 +22,17 @@ export function AppCard({
   onInstall,
   onUninstall,
 }: AppCardProps) {
-  const { t } = useI18n();
+  const { t, locale } = useI18n();
   const Icon = app.icon;
+  const description = locale === "sv" ? app.description : app.descriptionEn;
+  const openPort = port ?? app.port;
 
   // Open the app on its real port, on whichever host the dashboard is being
   // viewed from (the box's LAN IP or hostname the user typed).
   function openApp() {
-    if (typeof window === "undefined" || !port) return;
+    if (typeof window === "undefined" || !openPort) return;
     window.open(
-      `http://${window.location.hostname}:${port}`,
+      `http://${window.location.hostname}:${openPort}`,
       "_blank",
       "noopener,noreferrer",
     );
@@ -46,7 +48,7 @@ export function AppCard({
         </div>
         <div className="text-center">
           <h3 className="font-semibold text-white">{app.name}</h3>
-          <p className="text-xs text-slate-400 mt-0.5">{app.description}</p>
+          <p className="text-xs text-slate-400 mt-0.5">{description}</p>
         </div>
         {installed ? (
           <div className="flex w-full gap-2">
