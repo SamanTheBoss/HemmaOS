@@ -6,6 +6,10 @@ export const systemRouter = Router();
 systemRouter.get("/status", systemController.getStatus);
 systemRouter.post("/reboot", systemController.reboot);
 
+// Software updates (GitHub Releases)
+systemRouter.get("/update/check", systemController.checkUpdate);
+systemRouter.post("/update/apply", systemController.applyUpdate);
+
 // Tailscale
 systemRouter.get("/tailscale/status", systemController.getTailscaleStatus);
 systemRouter.post("/tailscale/auth", systemController.startTailscaleAuth);

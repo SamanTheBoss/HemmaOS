@@ -6,6 +6,7 @@ export const appNameSchema = z.enum([
   "adguard",
   "vaultwarden",
   "audiobookshelf",
+  "wordpress",
 ]);
 
 export const appInstallRequestSchema = z.object({

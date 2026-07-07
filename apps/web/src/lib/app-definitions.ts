@@ -4,11 +4,12 @@ import {
   Shield,
   Lock,
   Headphones,
+  Newspaper,
   type LucideIcon,
 } from "lucide-react";
 
 /** App store categories (used to group the grid). */
-export type CategoryId = "media" | "security";
+export type CategoryId = "media" | "security" | "web";
 
 export const CATEGORIES: { id: CategoryId; label: { sv: string; en: string } }[] =
   [
@@ -17,6 +18,7 @@ export const CATEGORIES: { id: CategoryId; label: { sv: string; en: string } }[]
       id: "security",
       label: { sv: "Säkerhet & Produktivitet", en: "Security & Productivity" },
     },
+    { id: "web", label: { sv: "Webb & Publicering", en: "Web & Publishing" } },
   ];
 
 interface Localized {
@@ -171,5 +173,28 @@ export const APP_DEFINITIONS: AppDefinition[] = [
     color: "text-white",
     bgColor: "bg-gradient-to-br from-emerald-400 to-green-700 shadow-lg shadow-emerald-500/20",
     envFields: [],
+  },
+  {
+    id: "wordpress",
+    name: "WordPress",
+    description: "Din egen hemsida & blogg",
+    descriptionEn: "Your own website & blog",
+    longDescription: {
+      sv: "Bygg och driv din egen hemsida, blogg eller butik på boxen. Världens mest använda publiceringsverktyg — helt under din kontroll. Kan senare publiceras på internet med egen domän.",
+      en: "Build and run your own website, blog or shop on the box. The world's most-used publishing platform — fully under your control. Can later be published to the internet with your own domain.",
+    },
+    category: "web",
+    replaces: { sv: "Wix / Squarespace", en: "Wix / Squarespace" },
+    developer: "WordPress",
+    website: "https://wordpress.org",
+    sourceUrl: "https://github.com/WordPress/WordPress",
+    downloadSize: "~700 MB",
+    gallery: [],
+    port: 8085,
+    icon: Newspaper,
+    color: "text-white",
+    bgColor: "bg-gradient-to-br from-sky-500 to-indigo-700 shadow-lg shadow-indigo-500/20",
+    envFields: [],
+    mobileApp: "WordPress (iOS / Android)",
   },
 ];

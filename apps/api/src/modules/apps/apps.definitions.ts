@@ -79,4 +79,15 @@ export const APP_DEFINITIONS: Record<AppName, AppDefinition> = {
     proxyPath: "audiobookshelf",
     envFields: [],
   },
+  wordpress: {
+    name: "wordpress",
+    displayName: "WordPress",
+    description: "Din egen hemsida & blogg",
+    containerName: "wordpress",
+    composeFile: "/opt/hemmaos/apps/wordpress/docker-compose.yml",
+    defaultPort: 8085,
+    internalPort: 80,
+    proxyPath: "wordpress",
+    envFields: [],
+  },
 };

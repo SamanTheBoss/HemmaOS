@@ -25,7 +25,20 @@ export default function HemPage() {
   const [data, setData] = useState<SystemStatus | null>(null);
   const [appStates, setAppStates] = useState<AppStates>({});
   const [error, setError] = useState<string | null>(null);
-  const { t } = useI18n();
+  const { t, locale } = useI18n();
+
+  const hour = new Date().getHours();
+  const greeting =
+    hour < 12
+      ? t("home.greeting.morning")
+      : hour < 18
+        ? t("home.greeting.afternoon")
+        : t("home.greeting.evening");
+  const today = new Date().toLocaleDateString(locale === "sv" ? "sv-SE" : "en-US", {
+    weekday: "long",
+    day: "numeric",
+    month: "long",
+  });
 
   useEffect(() => {
     api
@@ -69,6 +82,14 @@ export default function HemPage() {
 
   return (
     <div className="space-y-4">
+      {/* Time-based greeting hero */}
+      <div className="pt-1 pb-1">
+        <h1 className="text-[26px] font-bold tracking-tight text-white">
+          {greeting}
+        </h1>
+        <p className="mt-0.5 text-sm capitalize text-slate-500">{today}</p>
+      </div>
+
       <StatusHeader status={data.status} />
 
       {/* OS-style app launcher */}

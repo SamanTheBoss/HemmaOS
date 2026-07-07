@@ -88,6 +88,20 @@ export const api = {
   reboot: () =>
     request<{ success: boolean }>("/api/system/reboot", { method: "POST" }),
 
+  checkUpdate: () =>
+    request<{
+      current: string;
+      latest: string | null;
+      hasUpdate: boolean;
+      changelog: string | null;
+      url: string | null;
+    }>("/api/system/update/check"),
+
+  applyUpdate: () =>
+    request<{ started: boolean }>("/api/system/update/apply", {
+      method: "POST",
+    }),
+
   // Apps
   listApps: () =>
     request<{

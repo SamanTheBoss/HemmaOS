@@ -1,6 +1,33 @@
 import type { Request, Response, NextFunction } from "express";
 import * as systemService from "./system.service.js";
 import * as tailscaleService from "./tailscale.service.js";
+import * as updateService from "./update.service.js";
+
+export async function checkUpdate(
+  _req: Request,
+  res: Response,
+  next: NextFunction,
+): Promise<void> {
+  try {
+    const info = await updateService.checkForUpdate();
+    res.json({ data: info });
+  } catch (err) {
+    next(err);
+  }
+}
+
+export async function applyUpdate(
+  _req: Request,
+  res: Response,
+  next: NextFunction,
+): Promise<void> {
+  try {
+    await updateService.applyUpdate();
+    res.json({ data: { started: true } });
+  } catch (err) {
+    next(err);
+  }
+}
 
 export async function getStatus(
   _req: Request,

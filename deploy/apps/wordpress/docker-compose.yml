@@ -1,0 +1,36 @@
+services:
+  wordpress:
+    container_name: wordpress
+    image: wordpress:latest
+    restart: unless-stopped
+    ports:
+      - "8085:80"
+    environment:
+      WORDPRESS_DB_HOST: wordpress_db
+      WORDPRESS_DB_USER: wordpress
+      WORDPRESS_DB_PASSWORD: wordpress
+      WORDPRESS_DB_NAME: wordpress
+    volumes:
+      - /opt/hemmaos/data/wordpress/html:/var/www/html
+    depends_on:
+      - wordpress_db
+    networks:
+      - hemmaos
+
+  wordpress_db:
+    container_name: wordpress_db
+    image: mariadb:11
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: wordpress
+      MYSQL_USER: wordpress
+      MYSQL_PASSWORD: wordpress
+      MYSQL_RANDOM_ROOT_PASSWORD: "1"
+    volumes:
+      - /opt/hemmaos/data/wordpress/db:/var/lib/mysql
+    networks:
+      - hemmaos
+
+networks:
+  hemmaos:
+    external: true
