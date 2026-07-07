@@ -1,0 +1,15 @@
+services:
+  memos:
+    container_name: memos
+    image: neosmemo/memos:stable
+    restart: unless-stopped
+    ports:
+      - "5230:5230"
+    volumes:
+      - /opt/hemmaos/data/memos:/var/opt/memos
+    networks:
+      - hemmaos
+
+networks:
+  hemmaos:
+    external: true

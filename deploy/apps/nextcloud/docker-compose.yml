@@ -1,0 +1,37 @@
+services:
+  nextcloud:
+    container_name: nextcloud
+    image: nextcloud:latest
+    restart: unless-stopped
+    ports:
+      - "8086:80"
+    environment:
+      MYSQL_HOST: nextcloud_db
+      MYSQL_DATABASE: nextcloud
+      MYSQL_USER: nextcloud
+      MYSQL_PASSWORD: nextcloud
+    volumes:
+      - /opt/hemmaos/data/nextcloud/html:/var/www/html
+    depends_on:
+      - nextcloud_db
+    networks:
+      - hemmaos
+
+  nextcloud_db:
+    container_name: nextcloud_db
+    image: mariadb:11
+    restart: unless-stopped
+    command: --transaction-isolation=READ-COMMITTED --log-bin=binlog --binlog-format=ROW
+    environment:
+      MYSQL_DATABASE: nextcloud
+      MYSQL_USER: nextcloud
+      MYSQL_PASSWORD: nextcloud
+      MYSQL_RANDOM_ROOT_PASSWORD: "1"
+    volumes:
+      - /opt/hemmaos/data/nextcloud/db:/var/lib/mysql
+    networks:
+      - hemmaos
+
+networks:
+  hemmaos:
+    external: true

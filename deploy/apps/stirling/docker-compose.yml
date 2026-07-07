@@ -1,0 +1,15 @@
+services:
+  stirling:
+    container_name: stirling
+    image: stirlingtools/stirling-pdf:latest
+    restart: unless-stopped
+    ports:
+      - "8095:8080"
+    volumes:
+      - /opt/hemmaos/data/stirling/configs:/configs
+    networks:
+      - hemmaos
+
+networks:
+  hemmaos:
+    external: true

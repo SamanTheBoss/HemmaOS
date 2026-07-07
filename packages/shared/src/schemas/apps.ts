@@ -7,6 +7,13 @@ export const appNameSchema = z.enum([
   "vaultwarden",
   "audiobookshelf",
   "wordpress",
+  "nextcloud",
+  "homeassistant",
+  "navidrome",
+  "stirling",
+  "uptimekuma",
+  "memos",
+  "transmission",
 ]);
 
 export const appInstallRequestSchema = z.object({

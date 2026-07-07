@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import { Trash2, ExternalLink, Download, Globe, Code2 } from "lucide-react";
 import {
   Dialog,
@@ -107,26 +106,6 @@ export function AppDetail({
           )}
         </div>
 
-        {/* Screenshots — gallery images, or themed placeholders until bundled */}
-        <div className="mt-6">
-          <p className="mb-2 text-[11px] font-semibold uppercase tracking-wider text-slate-600">
-            {t("apps.screenshots")}
-          </p>
-          <div className="flex gap-3 overflow-x-auto pb-1">
-            {(app.gallery.length > 0
-              ? app.gallery
-              : [null, null, null]
-            ).map((src, i) => (
-              <Screenshot
-                key={i}
-                src={src}
-                alt={`${app.name} ${i + 1}`}
-                placeholderClass={app.bgColor}
-              />
-            ))}
-          </div>
-        </div>
-
         {/* About */}
         <div className="mt-6">
           <p className="mb-2 text-[11px] font-semibold uppercase tracking-wider text-slate-600">
@@ -173,36 +152,6 @@ export function AppDetail({
         </div>
       </DialogContent>
     </Dialog>
-  );
-}
-
-// A screenshot that degrades to a themed gradient placeholder if the image is
-// missing (assets aren't bundled yet) or fails to load.
-function Screenshot({
-  src,
-  alt,
-  placeholderClass,
-}: {
-  src: string | null;
-  alt: string;
-  placeholderClass: string;
-}) {
-  const [failed, setFailed] = useState(false);
-  if (!src || failed) {
-    return (
-      <div
-        className={`h-40 w-64 shrink-0 rounded-xl border border-line ${placeholderClass} opacity-30`}
-      />
-    );
-  }
-  return (
-    // eslint-disable-next-line @next/next/no-img-element
-    <img
-      src={src}
-      alt={alt}
-      onError={() => setFailed(true)}
-      className="h-40 shrink-0 rounded-xl border border-line object-cover"
-    />
   );
 }
 

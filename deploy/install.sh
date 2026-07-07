@@ -92,7 +92,8 @@ fi
 $SUDO mkdir -p /opt/hemmaos/{config,data,apps}
 
 # Copy app compose templates
-for app in immich jellyfin adguard vaultwarden audiobookshelf wordpress; do
+for app in immich jellyfin adguard vaultwarden audiobookshelf wordpress \
+           nextcloud homeassistant navidrome stirling uptimekuma memos transmission; do
   $SUDO mkdir -p "/opt/hemmaos/apps/$app"
   $SUDO cp "apps/$app/docker-compose.yml" "/opt/hemmaos/apps/$app/"
 done
@@ -106,8 +107,15 @@ $SUDO mkdir -p /opt/hemmaos/data/{jellyfin/config,jellyfin/cache}
 $SUDO mkdir -p /opt/hemmaos/data/{adguard/work,adguard/conf}
 $SUDO mkdir -p /opt/hemmaos/data/vaultwarden
 $SUDO mkdir -p /opt/hemmaos/data/{audiobookshelf/config,audiobookshelf/metadata}
-$SUDO mkdir -p /opt/hemmaos/data/{media/audiobooks,media/podcasts}
+$SUDO mkdir -p /opt/hemmaos/data/{media/audiobooks,media/podcasts,media/music,media/downloads}
 $SUDO mkdir -p /opt/hemmaos/data/{wordpress/html,wordpress/db}
+$SUDO mkdir -p /opt/hemmaos/data/{nextcloud/html,nextcloud/db}
+$SUDO mkdir -p /opt/hemmaos/data/homeassistant/config
+$SUDO mkdir -p /opt/hemmaos/data/navidrome/data
+$SUDO mkdir -p /opt/hemmaos/data/stirling/configs
+$SUDO mkdir -p /opt/hemmaos/data/uptimekuma
+$SUDO mkdir -p /opt/hemmaos/data/memos
+$SUDO mkdir -p /opt/hemmaos/data/transmission/config
 $SUDO mkdir -p /opt/hemmaos/data/backup
 
 # Create the Docker network if it doesn't exist
