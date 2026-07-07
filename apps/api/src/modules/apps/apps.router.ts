@@ -1,5 +1,6 @@
 import { Router } from "express";
 import { validate } from "../../shared/middleware/validate.js";
+import { requireParent } from "../../shared/middleware/auth.js";
 import {
   appInstallRequestSchema,
   appControlRequestSchema,
@@ -8,18 +9,22 @@ import * as appsController from "./apps.controller.js";
 
 export const appsRouter = Router();
 
+// Anyone signed in can see the catalog…
 appsRouter.get("/", appsController.list);
 
+// …but installing, controlling and uninstalling are parent-only.
 appsRouter.post(
   "/install",
+  requireParent,
   validate(appInstallRequestSchema),
   appsController.install,
 );
 
 appsRouter.post(
   "/control",
+  requireParent,
   validate(appControlRequestSchema),
   appsController.control,
 );
 
-appsRouter.post("/uninstall", appsController.uninstall);
+appsRouter.post("/uninstall", requireParent, appsController.uninstall);

@@ -9,10 +9,15 @@ import { SystemSettings } from "@/components/settings/system-settings";
 import { UpdateManager } from "@/components/settings/update-manager";
 import { BoxBackup } from "@/components/settings/box-backup";
 import { DiskHealth } from "@/components/settings/disk-health";
+import { FamilyMembers } from "@/components/settings/family-members";
 import { useI18n } from "@/lib/i18n-context";
+import { useAuth } from "@/lib/auth-context";
 
 export default function InstallningarPage() {
   const { t } = useI18n();
+  const { role } = useAuth();
+  // Children can view status but not change the system.
+  const isParent = role !== "child";
 
   return (
     <div className="mx-auto max-w-2xl space-y-4">
@@ -20,17 +25,20 @@ export default function InstallningarPage() {
       <p className="text-sm text-slate-400">{t("settings.subtitle")}</p>
 
       <RemoteAccess />
-      <SupportToggle />
-      <BackupManager />
+      {isParent && <SupportToggle />}
+      {isParent && <BackupManager />}
       <LogViewer />
-      <UpdateManager />
+      {isParent && <UpdateManager />}
       <DiskHealth />
-      <BoxBackup />
+      {isParent && <BoxBackup />}
+      {isParent && <FamilyMembers />}
       <SystemSettings />
 
-      <div className="pt-4">
-        <RebootButton />
-      </div>
+      {isParent && (
+        <div className="pt-4">
+          <RebootButton />
+        </div>
+      )}
     </div>
   );
 }

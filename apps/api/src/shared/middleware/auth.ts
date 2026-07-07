@@ -1,5 +1,5 @@
 import type { Request, Response, NextFunction } from "express";
-import { verifyToken } from "../../modules/auth/auth.service.js";
+import { verifyToken, type AuthPayload } from "../../modules/auth/auth.service.js";
 
 const PUBLIC_PATHS = new Set([
   "/api/auth/check",
@@ -35,12 +35,35 @@ export function authMiddleware(
     return;
   }
 
-  if (!verifyToken(token)) {
+  const payload = verifyToken(token);
+  if (!payload) {
     res.status(401).json({
       error: { message: "Invalid token", code: "INVALID_TOKEN" },
     });
     return;
   }
 
+  // Make the current user's role available to downstream handlers.
+  res.locals["auth"] = payload;
   next();
+}
+
+// Gate mutating/destructive actions to parent accounts.
+export function requireParent(
+  _req: Request,
+  res: Response,
+  next: NextFunction,
+): void {
+  const auth = res.locals["auth"] as AuthPayload | undefined;
+  if (auth?.role !== "parent") {
+    res.status(403).json({
+      error: { message: "Parent role required", code: "FORBIDDEN" },
+    });
+    return;
+  }
+  next();
+}
+
+export function currentAuth(res: Response): AuthPayload | null {
+  return (res.locals["auth"] as AuthPayload | undefined) ?? null;
 }

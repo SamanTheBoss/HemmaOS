@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import type { AppDefinition } from "@/lib/app-definitions";
 import { useI18n } from "@/lib/i18n-context";
+import { useAuth } from "@/lib/auth-context";
 
 interface AppCardProps {
   app: AppDefinition;
@@ -26,6 +27,8 @@ export function AppCard({
   onOpenDetail,
 }: AppCardProps) {
   const { t, locale } = useI18n();
+  const { role } = useAuth();
+  const isChild = role === "child";
   const Icon = app.icon;
   const description = locale === "sv" ? app.description : app.descriptionEn;
   const openPort = port ?? app.port;
@@ -69,19 +72,23 @@ export function AppCard({
             >
               {t("apps.open")}
             </Button>
-            <Button
-              variant="outline"
-              size="icon"
-              className="h-9 w-9 text-red-400 hover:text-red-300 hover:border-red-400/30"
-              onClick={(e) => {
-                e.stopPropagation();
-                onUninstall();
-              }}
-              title={t("apps.uninstall")}
-            >
-              <Trash2 className="h-4 w-4" />
-            </Button>
+            {!isChild && (
+              <Button
+                variant="outline"
+                size="icon"
+                className="h-9 w-9 text-red-400 hover:text-red-300 hover:border-red-400/30"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onUninstall();
+                }}
+                title={t("apps.uninstall")}
+              >
+                <Trash2 className="h-4 w-4" />
+              </Button>
+            )}
           </div>
+        ) : isChild ? (
+          <span className="text-[11px] text-slate-600">—</span>
         ) : (
           <Button
             size="sm"

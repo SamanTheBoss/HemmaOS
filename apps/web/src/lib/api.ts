@@ -76,6 +76,28 @@ export const api = {
       method: "PATCH",
       body: JSON.stringify(data),
     }),
+
+  // Current user + family members
+  me: () =>
+    request<{ name: string | null; role: "parent" | "child" | null }>(
+      "/api/auth/me",
+    ),
+
+  listUsers: () =>
+    request<{
+      users: { id: string; name: string; role: "parent" | "child" }[];
+    }>("/api/auth/users"),
+
+  addUser: (name: string, password: string, role: "parent" | "child") =>
+    request<{ id: string }>("/api/auth/users", {
+      method: "POST",
+      body: JSON.stringify({ name, password, role }),
+    }),
+
+  deleteUser: (id: string) =>
+    request<{ success: boolean }>(`/api/auth/users/${id}`, {
+      method: "DELETE",
+    }),
   // System
   getSystemStatus: () =>
     request<{

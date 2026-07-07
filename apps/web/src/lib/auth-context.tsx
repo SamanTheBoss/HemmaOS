@@ -15,7 +15,10 @@ interface AuthState {
   loading: boolean;
 }
 
+type Role = "parent" | "child" | null;
+
 interface AuthContextValue extends AuthState {
+  role: Role;
   login: (password: string) => Promise<void>;
   setup: (data: {
     password: string;
@@ -30,6 +33,7 @@ const AuthContext = createContext<AuthContextValue>({
   token: null,
   setupComplete: null,
   loading: true,
+  role: null,
   login: async () => {},
   setup: async () => {},
   logout: () => {},
@@ -41,6 +45,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setupComplete: null,
     loading: true,
   });
+  const [role, setRole] = useState<Role>(null);
 
   useEffect(() => {
     const stored = localStorage.getItem("hemmaos-token");
@@ -65,10 +70,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       });
   }, []);
 
-  // Update the API client when token changes
+  // Update the API client + fetch the current user's role when token changes
   useEffect(() => {
     if (state.token) {
       api.setToken(state.token);
+      api
+        .me()
+        .then((m) => setRole(m.role))
+        .catch(() => setRole(null));
+    } else {
+      setRole(null);
     }
   }, [state.token]);
 
@@ -98,7 +109,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   return (
-    <AuthContext.Provider value={{ ...state, login, setup, logout }}>
+    <AuthContext.Provider value={{ ...state, role, login, setup, logout }}>
       {children}
     </AuthContext.Provider>
   );
