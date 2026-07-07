@@ -9,6 +9,7 @@ import {
   APP_DEFINITIONS,
   CATEGORIES,
   type AppDefinition,
+  type CategoryId,
 } from "@/lib/app-definitions";
 import { api } from "@/lib/api";
 import { useI18n } from "@/lib/i18n-context";
@@ -25,6 +26,7 @@ export default function ApparPage() {
   const [loading, setLoading] = useState(true);
   const [selectedApp, setSelectedApp] = useState<AppDefinition | null>(null);
   const [detailApp, setDetailApp] = useState<AppDefinition | null>(null);
+  const [activeCat, setActiveCat] = useState<CategoryId | "all">("all");
   const { t, locale } = useI18n();
 
   const loadApps = useCallback(async () => {
@@ -79,36 +81,48 @@ export default function ApparPage() {
       <h1 className="text-2xl font-bold tracking-tight text-white">{t("apps.title")}</h1>
       <p className="text-sm text-slate-400">{t("apps.subtitle")}</p>
 
-      {CATEGORIES.map((cat) => {
-        const apps = APP_DEFINITIONS.filter((a) => a.category === cat.id);
-        if (apps.length === 0) return null;
-        return (
-          <div key={cat.id} className="pt-2">
-            <div className="mb-3 flex items-center gap-3">
-              <h2 className="text-[15px] font-semibold text-white">
+      {/* Category tabs */}
+      <div className="-mx-4 flex gap-2 overflow-x-auto px-4 pb-1 sm:mx-0 sm:flex-wrap sm:px-0">
+        {[{ id: "all" as const, label: { sv: t("apps.category.all"), en: t("apps.category.all") } }, ...CATEGORIES].map(
+          (cat) => {
+            const active = activeCat === cat.id;
+            return (
+              <button
+                key={cat.id}
+                onClick={() => setActiveCat(cat.id)}
+                className={
+                  "btn shrink-0 rounded-full px-4 py-2 text-[13px] font-semibold transition-all " +
+                  (active
+                    ? "bg-gradient-to-r from-accent to-violet text-white shadow-lg shadow-violet/25"
+                    : "border border-line bg-white/[.03] text-slate-300 hover:bg-white/[.06] hover:text-white")
+                }
+              >
                 {locale === "sv" ? cat.label.sv : cat.label.en}
-              </h2>
-              <div className="h-px flex-1 bg-gradient-to-r from-line to-transparent" />
-            </div>
-            <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
-              {apps.map((app) => {
-                const state = appStates[app.id];
-                return (
-                  <AppCard
-                    key={app.id}
-                    app={app}
-                    installed={state?.installed ?? false}
-                    port={state?.port}
-                    onInstall={() => setSelectedApp(app)}
-                    onUninstall={() => handleUninstall(app)}
-                    onOpenDetail={() => setDetailApp(app)}
-                  />
-                );
-              })}
-            </div>
-          </div>
-        );
-      })}
+              </button>
+            );
+          },
+        )}
+      </div>
+
+      {/* Filtered app grid */}
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
+        {APP_DEFINITIONS.filter(
+          (a) => activeCat === "all" || a.category === activeCat,
+        ).map((app) => {
+          const state = appStates[app.id];
+          return (
+            <AppCard
+              key={app.id}
+              app={app}
+              installed={state?.installed ?? false}
+              port={state?.port}
+              onInstall={() => setSelectedApp(app)}
+              onUninstall={() => handleUninstall(app)}
+              onOpenDetail={() => setDetailApp(app)}
+            />
+          );
+        })}
+      </div>
 
       {detailApp && (
         <AppDetail

@@ -7,6 +7,7 @@ import {
   AppLauncher,
   toInstalledApps,
 } from "@/components/dashboard/app-launcher";
+import { OnboardingWizard } from "@/components/dashboard/onboarding-wizard";
 import { api } from "@/lib/api";
 import { useI18n } from "@/lib/i18n-context";
 
@@ -22,6 +23,7 @@ type AppStates = Record<string, { installed: boolean; port?: number }>;
 export default function HemPage() {
   const [data, setData] = useState<SystemStatus | null>(null);
   const [appStates, setAppStates] = useState<AppStates>({});
+  const [appsLoaded, setAppsLoaded] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const { t, locale } = useI18n();
 
@@ -52,8 +54,11 @@ export default function HemPage() {
         }
         setAppStates(states);
       })
-      .catch(() => {});
+      .catch(() => {})
+      .finally(() => setAppsLoaded(true));
   }, []);
+
+  const hasApps = Object.values(appStates).some((s) => s.installed);
 
   return (
     <div className="flex flex-col items-center text-center">
@@ -98,6 +103,8 @@ export default function HemPage() {
       <div className="mt-10 w-full max-w-3xl">
         <AppLauncher apps={toInstalledApps(appStates)} />
       </div>
+
+      {appsLoaded && <OnboardingWizard hasApps={hasApps} />}
     </div>
   );
 }

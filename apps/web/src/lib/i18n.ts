@@ -7,6 +7,13 @@ const translations = {
     "nav.apps": "Appar",
     "nav.settings": "Inställningar",
 
+    // Onboarding
+    "onboarding.title": "Välkommen till HemmaOS!",
+    "onboarding.subtitle": "Din box är redo. Kom igång genom att installera din första app — allt körs privat hemma hos dig.",
+    "onboarding.recommended": "Populära att börja med",
+    "onboarding.browse": "Utforska App Store",
+    "onboarding.skip": "Hoppa över",
+
     // Home / desktop
     "home.greeting.morning": "God morgon",
     "home.greeting.afternoon": "God eftermiddag",
@@ -37,6 +44,7 @@ const translations = {
     "apps.subtitle": "Installera och hantera dina familjeappar.",
     "apps.install": "Installera",
     "apps.open": "Öppna",
+    "apps.category.all": "Alla",
     "apps.uninstall": "Avinstallera",
     "apps.uninstall.confirm": "Avinstallera {name}? Appen tas bort men din data sparas.",
     "apps.about": "Om appen",
@@ -158,6 +166,12 @@ const translations = {
     "nav.apps": "Apps",
     "nav.settings": "Settings",
 
+    "onboarding.title": "Welcome to HemmaOS!",
+    "onboarding.subtitle": "Your box is ready. Get started by installing your first app — everything runs privately at home.",
+    "onboarding.recommended": "Popular to start with",
+    "onboarding.browse": "Explore the App Store",
+    "onboarding.skip": "Skip",
+
     "home.greeting.morning": "Good morning",
     "home.greeting.afternoon": "Good afternoon",
     "home.greeting.evening": "Good evening",
@@ -185,6 +199,7 @@ const translations = {
     "apps.subtitle": "Install and manage your family apps.",
     "apps.install": "Install",
     "apps.open": "Open",
+    "apps.category.all": "All",
     "apps.uninstall": "Uninstall",
     "apps.uninstall.confirm": "Uninstall {name}? The app is removed but your data is kept.",
     "apps.about": "About",
