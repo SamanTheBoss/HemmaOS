@@ -13,6 +13,8 @@ interface AppCardProps {
   port?: number;
   onInstall: () => void;
   onUninstall: () => void;
+  /** Clicking the card body opens the detail view. */
+  onOpenDetail: () => void;
 }
 
 export function AppCard({
@@ -21,6 +23,7 @@ export function AppCard({
   port,
   onInstall,
   onUninstall,
+  onOpenDetail,
 }: AppCardProps) {
   const { t, locale } = useI18n();
   const Icon = app.icon;
@@ -39,7 +42,10 @@ export function AppCard({
   }
 
   return (
-    <Card className="card-lift flex flex-col">
+    <Card
+      className="card-lift flex flex-col cursor-pointer"
+      onClick={onOpenDetail}
+    >
       <CardContent className="flex flex-col items-center gap-3 p-5">
         <div
           className={`flex h-14 w-14 items-center justify-center rounded-2xl ${app.bgColor}`}
@@ -56,7 +62,10 @@ export function AppCard({
               variant="success"
               size="sm"
               className="flex-1"
-              onClick={openApp}
+              onClick={(e) => {
+                e.stopPropagation();
+                openApp();
+              }}
             >
               {t("apps.open")}
             </Button>
@@ -64,14 +73,24 @@ export function AppCard({
               variant="outline"
               size="icon"
               className="h-9 w-9 text-red-400 hover:text-red-300 hover:border-red-400/30"
-              onClick={onUninstall}
+              onClick={(e) => {
+                e.stopPropagation();
+                onUninstall();
+              }}
               title={t("apps.uninstall")}
             >
               <Trash2 className="h-4 w-4" />
             </Button>
           </div>
         ) : (
-          <Button size="sm" className="w-full" onClick={onInstall}>
+          <Button
+            size="sm"
+            className="w-full"
+            onClick={(e) => {
+              e.stopPropagation();
+              onInstall();
+            }}
+          >
             {t("apps.install")}
           </Button>
         )}

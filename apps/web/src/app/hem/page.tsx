@@ -5,6 +5,10 @@ import { StatusHeader } from "@/components/dashboard/status-header";
 import { StorageCard } from "@/components/dashboard/storage-card";
 import { BackupHealth } from "@/components/dashboard/backup-health";
 import { RamCard } from "@/components/dashboard/ram-card";
+import {
+  AppLauncher,
+  toInstalledApps,
+} from "@/components/dashboard/app-launcher";
 import { api } from "@/lib/api";
 import { useI18n } from "@/lib/i18n-context";
 
@@ -15,8 +19,11 @@ interface SystemStatus {
   backup: { last_success: string; status: string };
 }
 
+type AppStates = Record<string, { installed: boolean; port?: number }>;
+
 export default function HemPage() {
   const [data, setData] = useState<SystemStatus | null>(null);
+  const [appStates, setAppStates] = useState<AppStates>({});
   const [error, setError] = useState<string | null>(null);
   const { t } = useI18n();
 
@@ -25,6 +32,19 @@ export default function HemPage() {
       .getSystemStatus()
       .then(setData)
       .catch((err) => setError(err.message));
+
+    api
+      .listApps()
+      .then((res) => {
+        const states: AppStates = {};
+        for (const a of res.apps) {
+          states[a.name] = { installed: a.installed, port: a.port };
+        }
+        setAppStates(states);
+      })
+      .catch(() => {
+        // apps optional on the home screen
+      });
   }, []);
 
   if (error) {
@@ -50,6 +70,16 @@ export default function HemPage() {
   return (
     <div className="space-y-4">
       <StatusHeader status={data.status} />
+
+      {/* OS-style app launcher */}
+      <section>
+        <h2 className="mb-3 px-1 text-[13px] font-semibold uppercase tracking-wider text-slate-500">
+          {t("home.apps")}
+        </h2>
+        <AppLauncher apps={toInstalledApps(appStates)} />
+      </section>
+
+      {/* System widgets */}
       <StorageCard
         total={data.disk.total}
         used={data.disk.used}
