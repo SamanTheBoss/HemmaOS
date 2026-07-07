@@ -10,6 +10,9 @@ systemRouter.post("/reboot", systemController.reboot);
 systemRouter.get("/update/check", systemController.checkUpdate);
 systemRouter.post("/update/apply", systemController.applyUpdate);
 
+// Local box backup — download config/keys archive
+systemRouter.get("/backup/config", systemController.backupConfig);
+
 // Tailscale
 systemRouter.get("/tailscale/status", systemController.getTailscaleStatus);
 systemRouter.post("/tailscale/auth", systemController.startTailscaleAuth);

@@ -71,7 +71,7 @@ echo "Compose OK: $(docker compose version | head -n1)"
 # so users never have to find or type an IP address.
 # ---------------------------------------------------------------------------
 if command -v apt-get >/dev/null 2>&1; then
-  $SUDO apt-get install -y avahi-daemon avahi-utils || true
+  $SUDO apt-get install -y avahi-daemon avahi-utils smartmontools || true
   if [ -f /etc/avahi/avahi-daemon.conf ]; then
     if grep -qE '^\s*#?\s*host-name=' /etc/avahi/avahi-daemon.conf; then
       $SUDO sed -i 's/^\s*#\?\s*host-name=.*/host-name=hemmaos/' /etc/avahi/avahi-daemon.conf

@@ -102,6 +102,15 @@ export const api = {
       method: "POST",
     }),
 
+  // Downloads the config/keys archive as a Blob (binary, so not via request()).
+  downloadConfigBackup: async (): Promise<Blob> => {
+    const res = await fetch(`${resolveApiBase()}/api/system/backup/config`, {
+      headers: authToken ? { Authorization: `Bearer ${authToken}` } : {},
+    });
+    if (!res.ok) throw new Error(`Backup failed: ${res.status}`);
+    return res.blob();
+  },
+
   // Apps
   listApps: () =>
     request<{

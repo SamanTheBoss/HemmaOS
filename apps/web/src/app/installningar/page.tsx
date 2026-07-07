@@ -7,6 +7,7 @@ import { BackupManager } from "@/components/settings/backup-manager";
 import { RebootButton } from "@/components/settings/reboot-button";
 import { SystemSettings } from "@/components/settings/system-settings";
 import { UpdateManager } from "@/components/settings/update-manager";
+import { BoxBackup } from "@/components/settings/box-backup";
 import { useI18n } from "@/lib/i18n-context";
 
 export default function InstallningarPage() {
@@ -22,6 +23,7 @@ export default function InstallningarPage() {
       <BackupManager />
       <LogViewer />
       <UpdateManager />
+      <BoxBackup />
       <SystemSettings />
 
       <div className="pt-4">

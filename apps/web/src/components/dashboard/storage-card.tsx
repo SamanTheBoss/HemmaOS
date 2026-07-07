@@ -1,6 +1,6 @@
 "use client";
 
-import { HardDrive } from "lucide-react";
+import { HardDrive, AlertTriangle } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { useI18n } from "@/lib/i18n-context";
@@ -43,6 +43,14 @@ export function StorageCard({ total, used, percent }: StorageCardProps) {
             years: estimateYears(percent, locale),
           })}
         </p>
+        {percent >= 85 && (
+          <div className="mt-3 flex items-start gap-2 rounded-xl bg-amber-400/10 border border-amber-400/20 p-3">
+            <AlertTriangle className="h-4 w-4 text-amber-400 mt-0.5 shrink-0" />
+            <p className="text-xs text-amber-200/90">
+              {t("dashboard.storage.warning")}
+            </p>
+          </div>
+        )}
       </CardContent>
     </Card>
   );

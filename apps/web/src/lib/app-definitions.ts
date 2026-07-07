@@ -54,6 +54,11 @@ export interface AppDefinition {
   mobileApp?: string;
 }
 
+// Screenshot paths served from apps/web/public/app-assets/<id>/ — populated by
+// deploy/fetch-assets.sh. Missing images degrade to a gradient placeholder.
+const shots = (id: string): string[] =>
+  [1, 2, 3].map((n) => `/app-assets/${id}/${n}.jpg`);
+
 export const APP_DEFINITIONS: AppDefinition[] = [
   {
     id: "immich",
@@ -70,7 +75,7 @@ export const APP_DEFINITIONS: AppDefinition[] = [
     website: "https://immich.app",
     sourceUrl: "https://github.com/immich-app/immich",
     downloadSize: "~6 GB",
-    gallery: [],
+    gallery: shots("immich"),
     port: 2283,
     icon: Camera,
     color: "text-white",
@@ -96,7 +101,7 @@ export const APP_DEFINITIONS: AppDefinition[] = [
     website: "https://jellyfin.org",
     sourceUrl: "https://github.com/jellyfin/jellyfin",
     downloadSize: "~1 GB",
-    gallery: [],
+    gallery: shots("jellyfin"),
     port: 8096,
     icon: Tv,
     color: "text-white",
@@ -119,7 +124,7 @@ export const APP_DEFINITIONS: AppDefinition[] = [
     website: "https://www.audiobookshelf.org",
     sourceUrl: "https://github.com/advplyr/audiobookshelf",
     downloadSize: "~200 MB",
-    gallery: [],
+    gallery: shots("audiobookshelf"),
     port: 13378,
     icon: Headphones,
     color: "text-white",
@@ -142,7 +147,7 @@ export const APP_DEFINITIONS: AppDefinition[] = [
     website: "https://github.com/dani-garcia/vaultwarden",
     sourceUrl: "https://github.com/dani-garcia/vaultwarden",
     downloadSize: "~92 MB",
-    gallery: [],
+    gallery: shots("vaultwarden"),
     port: 8080,
     icon: Lock,
     color: "text-white",
@@ -167,7 +172,7 @@ export const APP_DEFINITIONS: AppDefinition[] = [
     website: "https://adguard.com/adguard-home.html",
     sourceUrl: "https://github.com/AdguardTeam/AdGuardHome",
     downloadSize: "~64 MB",
-    gallery: [],
+    gallery: shots("adguard"),
     port: 3001,
     icon: Shield,
     color: "text-white",
@@ -189,7 +194,7 @@ export const APP_DEFINITIONS: AppDefinition[] = [
     website: "https://wordpress.org",
     sourceUrl: "https://github.com/WordPress/WordPress",
     downloadSize: "~700 MB",
-    gallery: [],
+    gallery: shots("wordpress"),
     port: 8085,
     icon: Newspaper,
     color: "text-white",

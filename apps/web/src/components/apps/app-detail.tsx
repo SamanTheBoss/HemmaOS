@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { Trash2, ExternalLink, Download, Globe, Code2 } from "lucide-react";
 import {
   Dialog,
@@ -115,22 +116,14 @@ export function AppDetail({
             {(app.gallery.length > 0
               ? app.gallery
               : [null, null, null]
-            ).map((src, i) =>
-              src ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img
-                  key={i}
-                  src={src}
-                  alt={`${app.name} ${i + 1}`}
-                  className="h-40 shrink-0 rounded-xl border border-line object-cover"
-                />
-              ) : (
-                <div
-                  key={i}
-                  className={`h-40 w-64 shrink-0 rounded-xl border border-line ${app.bgColor} opacity-30`}
-                />
-              ),
-            )}
+            ).map((src, i) => (
+              <Screenshot
+                key={i}
+                src={src}
+                alt={`${app.name} ${i + 1}`}
+                placeholderClass={app.bgColor}
+              />
+            ))}
           </div>
         </div>
 
@@ -180,6 +173,36 @@ export function AppDetail({
         </div>
       </DialogContent>
     </Dialog>
+  );
+}
+
+// A screenshot that degrades to a themed gradient placeholder if the image is
+// missing (assets aren't bundled yet) or fails to load.
+function Screenshot({
+  src,
+  alt,
+  placeholderClass,
+}: {
+  src: string | null;
+  alt: string;
+  placeholderClass: string;
+}) {
+  const [failed, setFailed] = useState(false);
+  if (!src || failed) {
+    return (
+      <div
+        className={`h-40 w-64 shrink-0 rounded-xl border border-line ${placeholderClass} opacity-30`}
+      />
+    );
+  }
+  return (
+    // eslint-disable-next-line @next/next/no-img-element
+    <img
+      src={src}
+      alt={alt}
+      onError={() => setFailed(true)}
+      className="h-40 shrink-0 rounded-xl border border-line object-cover"
+    />
   );
 }
 
