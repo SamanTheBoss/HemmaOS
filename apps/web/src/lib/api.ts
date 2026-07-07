@@ -157,10 +157,20 @@ export const api = {
     }>("/api/apps"),
 
   installApp: (app: string, env: Record<string, string>) =>
-    request<{ success: boolean; url: string }>("/api/apps/install", {
+    request<{ started: boolean }>("/api/apps/install", {
       method: "POST",
       body: JSON.stringify({ app, env }),
     }),
+
+  getInstallProgress: (app: string) =>
+    request<{
+      percent: number;
+      status: string;
+      done: boolean;
+      error: string | null;
+      url: string | null;
+      port: number | null;
+    }>(`/api/apps/install/progress?app=${encodeURIComponent(app)}`),
 
   controlApp: (app: string, action: string) =>
     request<{ success: boolean }>("/api/apps/control", {

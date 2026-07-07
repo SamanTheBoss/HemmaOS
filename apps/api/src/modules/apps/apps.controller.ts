@@ -10,11 +10,28 @@ export async function install(
   next: NextFunction,
 ): Promise<void> {
   try {
-    const result = await appsService.installApp(req.body as AppInstallRequest);
+    const result = await appsService.startInstall(
+      req.body as AppInstallRequest,
+    );
     res.json({ data: result });
   } catch (err) {
     next(err);
   }
+}
+
+export function installProgress(req: Request, res: Response): void {
+  const app = typeof req.query["app"] === "string" ? req.query["app"] : "";
+  res.json({
+    data:
+      appsService.getInstallProgress(app) ?? {
+        percent: 0,
+        status: "starting",
+        done: false,
+        error: null,
+        url: null,
+        port: null,
+      },
+  });
 }
 
 export async function control(

@@ -8,6 +8,15 @@ vi.mock("../../../shared/lib/shell.js", () => ({
   shell: vi.fn().mockResolvedValue({ stdout: "", stderr: "" }),
 }));
 
+// startInstall spawns `docker compose` in the background — stub the process.
+vi.mock("node:child_process", () => ({
+  spawn: vi.fn(() => ({
+    stdout: { on: vi.fn() },
+    stderr: { on: vi.fn() },
+    on: vi.fn(),
+  })),
+}));
+
 vi.mock("../../../shared/lib/docker.js", () => ({
   docker: {
     getContainer: vi.fn().mockReturnValue({
@@ -18,12 +27,10 @@ vi.mock("../../../shared/lib/docker.js", () => ({
   },
 }));
 
-import { installApp, controlApp } from "../apps.service.js";
-import { shell } from "../../../shared/lib/shell.js";
+import { startInstall, controlApp } from "../apps.service.js";
 import { writeFile } from "node:fs/promises";
 import { docker } from "../../../shared/lib/docker.js";
 
-const mockShell = vi.mocked(shell);
 const mockWriteFile = vi.mocked(writeFile);
 const mockDocker = vi.mocked(docker);
 
@@ -32,9 +39,9 @@ describe("apps.service", () => {
     vi.clearAllMocks();
   });
 
-  describe("installApp", () => {
-    it("writes env file and runs docker compose up", async () => {
-      const result = await installApp({
+  describe("startInstall", () => {
+    it("writes the env file and starts the install", async () => {
+      const result = await startInstall({
         app: "immich",
         env: { ADMIN_PASS: "secret", USER: "admin" },
       });
@@ -44,18 +51,12 @@ describe("apps.service", () => {
         "ADMIN_PASS=secret\nUSER=admin",
         "utf-8",
       );
-
-      expect(mockShell).toHaveBeenCalledWith(
-        "docker compose -f /opt/hemmaos/apps/immich/docker-compose.yml up -d",
-      );
-
-      expect(result.success).toBe(true);
-      expect(result.url).toContain("immich");
+      expect(result.started).toBe(true);
     });
 
     it("throws for unknown app", async () => {
       await expect(
-        installApp({ app: "nonexistent" as any, env: {} }),
+        startInstall({ app: "nonexistent" as any, env: {} }),
       ).rejects.toThrow("Unknown app");
     });
   });

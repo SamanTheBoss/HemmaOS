@@ -1,5 +1,6 @@
 import { writeFile } from "node:fs/promises";
 import { dirname } from "node:path";
+import { spawn } from "node:child_process";
 import { shell } from "../../shared/lib/shell.js";
 import { docker } from "../../shared/lib/docker.js";
 import { AppError } from "../../shared/middleware/error-handler.js";
@@ -8,14 +9,33 @@ import { APP_DEFINITIONS } from "./apps.definitions.js";
 import type {
   AppName,
   AppInstallRequest,
-  AppInstallResponse,
   AppControlRequest,
   AppControlResponse,
 } from "./apps.types.js";
 
-export async function installApp(
+export interface InstallProgress {
+  percent: number;
+  status: "starting" | "downloading" | "extracting" | "configuring" | "done" | "error";
+  done: boolean;
+  error: string | null;
+  url: string | null;
+  port: number | null;
+}
+
+// Live install progress per app, updated by parsing `docker compose` output.
+const installs = new Map<string, InstallProgress>();
+
+export function getInstallProgress(app: string): InstallProgress | null {
+  return installs.get(app) ?? null;
+}
+
+// Starts the install in the background and returns immediately. Large apps
+// (WordPress, Nextcloud, Immich…) can take minutes to pull — far longer than a
+// single shell timeout — so we spawn the process and stream its progress, which
+// the UI polls via getInstallProgress().
+export async function startInstall(
   payload: AppInstallRequest,
-): Promise<AppInstallResponse> {
+): Promise<{ started: boolean }> {
   const definition = APP_DEFINITIONS[payload.app];
   if (!definition) {
     throw new AppError(400, `Unknown app: ${payload.app}`, "UNKNOWN_APP");
@@ -24,22 +44,86 @@ export async function installApp(
   const envContent = Object.entries(payload.env)
     .map(([key, value]) => `${key}=${value}`)
     .join("\n");
+  await writeFile(`${dirname(definition.composeFile)}/.env`, envContent, "utf-8");
 
-  const envPath = `${dirname(definition.composeFile)}/.env`;
-  await writeFile(envPath, envContent, "utf-8");
+  const state: InstallProgress = {
+    percent: 0,
+    status: "starting",
+    done: false,
+    error: null,
+    url: null,
+    port: null,
+  };
+  installs.set(payload.app, state);
 
-  await shell(
-    `docker compose -f ${definition.composeFile} up -d`,
-  );
+  const child = spawn("docker", [
+    "compose",
+    "-f",
+    definition.composeFile,
+    "up",
+    "-d",
+  ]);
 
-  // Regenerate Caddyfile with routes for all installed apps
-  await updateCaddyRoutes();
+  const layers = new Set<string>();
+  const doneLayers = new Set<string>();
 
-  const tailscaleDomain =
-    process.env["TAILSCALE_DOMAIN"] ?? "localhost";
-  const url = `https://${tailscaleDomain}/${payload.app}`;
+  function parse(chunk: string): void {
+    for (const raw of chunk.split(/[\r\n]+/)) {
+      const line = raw.trim();
+      if (!line) continue;
+      const id = line.split(/\s+/)[0] ?? "";
+      if (/Pulling fs layer/.test(line)) layers.add(id);
+      if (/Pull complete|Already exists/.test(line)) {
+        layers.add(id);
+        doneLayers.add(id);
+      }
+      if (/Downloading/.test(line)) state.status = "downloading";
+      else if (/Extracting/.test(line)) state.status = "extracting";
+      if (/Container .*(Creating|Created|Starting|Started|Running)/.test(line)) {
+        state.status = "configuring";
+      }
+      const total = layers.size;
+      const pct =
+        total > 0
+          ? Math.round((doneLayers.size / total) * 90)
+          : state.status === "downloading"
+            ? 20
+            : 5;
+      state.percent = Math.max(state.percent, Math.min(90, pct));
+    }
+  }
 
-  return { success: true, url };
+  child.stdout.on("data", (d) => parse(d.toString()));
+  child.stderr.on("data", (d) => parse(d.toString()));
+
+  child.on("close", (code) => {
+    void (async () => {
+      if (code === 0) {
+        try {
+          await updateCaddyRoutes();
+        } catch {
+          /* non-critical */
+        }
+        state.percent = 100;
+        state.status = "done";
+        state.done = true;
+        state.url = `https://${process.env["TAILSCALE_DOMAIN"] ?? "localhost"}/${payload.app}`;
+        state.port = definition.defaultPort;
+      } else {
+        state.status = "error";
+        state.done = true;
+        state.error = `docker compose exited with code ${code}`;
+      }
+    })();
+  });
+
+  child.on("error", (err) => {
+    state.status = "error";
+    state.done = true;
+    state.error = err.message;
+  });
+
+  return { started: true };
 }
 
 export async function controlApp(

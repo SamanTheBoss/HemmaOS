@@ -20,7 +20,7 @@ interface SetupStepperProps {
   app: AppDefinition;
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onComplete: (url: string) => void;
+  onComplete: () => void;
 }
 
 type Step = "config" | "deploying" | "done";
@@ -41,7 +41,6 @@ export function SetupStepper({
       : "#";
   const [step, setStep] = useState<Step>("config");
   const [env, setEnv] = useState<Record<string, string>>({});
-  const [, setResultUrl] = useState("");
   const [progress, setProgress] = useState(0);
   const [error, setError] = useState<string | null>(null);
   const progressTimer = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -50,37 +49,42 @@ export function SetupStepper({
     setEnv((prev) => ({ ...prev, [key]: value }));
   }
 
-  // Smoothly climb toward 90% while the download/deploy runs (we don't get
-  // byte-level progress from the backend yet), then snap to 100% on completion.
-  function startProgress() {
-    setProgress(0);
-    progressTimer.current = setInterval(() => {
-      setProgress((p) => {
-        if (p >= 90) return p;
-        const step = p < 50 ? 3 : p < 75 ? 1.4 : 0.5;
-        return Math.min(90, p + step);
-      });
-    }, 400);
-  }
-
   function stopProgress() {
     if (progressTimer.current) clearInterval(progressTimer.current);
     progressTimer.current = null;
   }
 
+  // Poll the backend for real install progress (layers downloaded/extracted).
+  function pollProgress() {
+    progressTimer.current = setInterval(async () => {
+      try {
+        const p = await api.getInstallProgress(app.id);
+        setProgress(p.percent);
+        if (p.done) {
+          stopProgress();
+          if (p.error) {
+            setError(p.error);
+            setStep("config");
+          } else {
+            setProgress(100);
+            onComplete();
+            setStep("done");
+          }
+        }
+      } catch {
+        // transient — keep polling
+      }
+    }, 1500);
+  }
+
   async function handleInstall() {
     setStep("deploying");
     setError(null);
-    startProgress();
+    setProgress(0);
     try {
-      const result = await api.installApp(app.id, env);
-      setResultUrl(result.url);
-      stopProgress();
-      setProgress(100);
-      onComplete(result.url);
-      setStep("done");
+      await api.installApp(app.id, env); // starts the background install
+      pollProgress();
     } catch (err) {
-      stopProgress();
       setError(err instanceof Error ? err.message : "Något gick fel");
       setStep("config");
     }

@@ -9,8 +9,9 @@ import * as appsController from "./apps.controller.js";
 
 export const appsRouter = Router();
 
-// Anyone signed in can see the catalog…
+// Anyone signed in can see the catalog + install progress…
 appsRouter.get("/", appsController.list);
+appsRouter.get("/install/progress", appsController.installProgress);
 
 // …but installing, controlling and uninstalling are parent-only.
 appsRouter.post(
