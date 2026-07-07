@@ -90,7 +90,7 @@ export default function ApparPage() {
               </h2>
               <div className="h-px flex-1 bg-gradient-to-r from-line to-transparent" />
             </div>
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
               {apps.map((app) => {
                 const state = appStates[app.id];
                 return (

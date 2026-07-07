@@ -77,6 +77,19 @@ export async function reboot(
   }
 }
 
+export async function getDiskHealth(
+  _req: Request,
+  res: Response,
+  next: NextFunction,
+): Promise<void> {
+  try {
+    const disks = await systemService.getDiskHealth();
+    res.json({ data: { disks } });
+  } catch (err) {
+    next(err);
+  }
+}
+
 export async function getTailscaleStatus(
   _req: Request,
   res: Response,

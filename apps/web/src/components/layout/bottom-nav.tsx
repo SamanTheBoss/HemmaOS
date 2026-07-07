@@ -17,25 +17,24 @@ export function BottomNav() {
   ] as const;
 
   return (
-    <nav className="glass fixed bottom-0 left-0 right-0 z-40 border-t border-line safe-area-bottom">
-      <div className="mx-auto flex max-w-md items-center justify-around py-2">
+    <nav className="fixed bottom-4 left-1/2 z-40 -translate-x-1/2">
+      <div className="glass flex items-center gap-1.5 rounded-2xl border border-line p-2 shadow-2xl shadow-black/50">
         {navItems.map(({ href, label, icon: Icon }) => {
           const isActive = pathname.startsWith(href);
           return (
             <Link
               key={href}
               href={href}
+              title={label}
+              aria-label={label}
               className={cn(
-                "btn flex flex-col items-center gap-0.5 rounded-xl px-4 py-1.5 text-xs transition-colors",
+                "btn flex h-12 w-12 items-center justify-center rounded-xl transition-all",
                 isActive
-                  ? "text-white bg-gradient-to-r from-accent/20 to-violet/10 shadow-[inset_0_0_0_1px_rgba(99,120,255,0.22)]"
-                  : "text-slate-500 hover:text-slate-200 hover:bg-white/[.04]",
+                  ? "bg-gradient-to-br from-accent to-violet text-white shadow-lg shadow-violet/30"
+                  : "text-slate-400 hover:bg-white/[.06] hover:text-white",
               )}
             >
-              <Icon
-                className={cn("h-6 w-6", isActive && "stroke-[2.5]")}
-              />
-              <span className="font-medium">{label}</span>
+              <Icon className="h-6 w-6" />
             </Link>
           );
         })}

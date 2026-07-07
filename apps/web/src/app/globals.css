@@ -21,12 +21,18 @@
     color-scheme: dark;
   }
 
-  html,
-  body {
+  html {
     background: #0d0e12;
   }
 
+  /* OS-style wallpaper: a calm dusk gradient in the brand colors, fixed so it
+     stays put while content scrolls. */
   body {
+    background:
+      radial-gradient(1100px 620px at 50% -8%, rgba(59, 130, 246, 0.14), transparent 58%),
+      radial-gradient(1000px 720px at 82% 112%, rgba(139, 92, 246, 0.17), transparent 58%),
+      linear-gradient(180deg, #0b1022 0%, #0d0e12 55%);
+    background-attachment: fixed;
     color: #cbd0dc;
     font-family: var(--font-sans);
     font-feature-settings: "cv02", "cv03", "cv11";

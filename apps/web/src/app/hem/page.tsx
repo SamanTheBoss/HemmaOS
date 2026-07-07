@@ -1,10 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { StatusHeader } from "@/components/dashboard/status-header";
-import { StorageCard } from "@/components/dashboard/storage-card";
-import { BackupHealth } from "@/components/dashboard/backup-health";
-import { RamCard } from "@/components/dashboard/ram-card";
+import { Server } from "lucide-react";
+import { WidgetRow } from "@/components/dashboard/widget-row";
 import {
   AppLauncher,
   toInstalledApps,
@@ -34,11 +32,10 @@ export default function HemPage() {
       : hour < 18
         ? t("home.greeting.afternoon")
         : t("home.greeting.evening");
-  const today = new Date().toLocaleDateString(locale === "sv" ? "sv-SE" : "en-US", {
-    weekday: "long",
-    day: "numeric",
-    month: "long",
-  });
+  const today = new Date().toLocaleDateString(
+    locale === "sv" ? "sv-SE" : "en-US",
+    { weekday: "long", day: "numeric", month: "long" },
+  );
 
   useEffect(() => {
     api
@@ -55,62 +52,52 @@ export default function HemPage() {
         }
         setAppStates(states);
       })
-      .catch(() => {
-        // apps optional on the home screen
-      });
+      .catch(() => {});
   }, []);
 
-  if (error) {
-    return (
-      <div className="space-y-4">
-        <StatusHeader status="UNHEALTHY" />
-        <p className="text-sm text-red-400 text-center">{error}</p>
-      </div>
-    );
-  }
-
-  if (!data) {
-    return (
-      <div className="space-y-4">
-        <div className="shimmer rounded-2xl border border-line h-28" />
-        <div className="shimmer rounded-2xl border border-line h-36" />
-        <div className="shimmer rounded-2xl border border-line h-36" />
-        <div className="shimmer rounded-2xl border border-line h-28" />
-      </div>
-    );
-  }
-
   return (
-    <div className="space-y-4">
-      {/* Time-based greeting hero */}
-      <div className="pt-1 pb-1">
-        <h1 className="text-[26px] font-bold tracking-tight text-white">
-          {greeting}
-        </h1>
-        <p className="mt-0.5 text-sm capitalize text-slate-500">{today}</p>
+    <div className="flex flex-col items-center text-center">
+      {/* Logo mark */}
+      <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-accent to-violet shadow-xl shadow-violet/30">
+        <Server className="h-6 w-6 text-white" />
       </div>
 
-      <StatusHeader status={data.status} />
+      {/* Greeting */}
+      <h1 className="mt-4 text-[30px] font-bold tracking-tight text-white sm:text-[34px]">
+        {greeting}
+      </h1>
+      <p className="mt-1 text-sm capitalize text-slate-400">{today}</p>
 
-      {/* OS-style app launcher */}
-      <section>
-        <h2 className="mb-3 px-1 text-[13px] font-semibold uppercase tracking-wider text-slate-500">
-          {t("home.apps")}
-        </h2>
+      {error && (
+        <p className="mt-4 text-sm text-red-400">{error}</p>
+      )}
+
+      {/* Widgets */}
+      {data && (
+        <div className="mt-8 w-full">
+          <WidgetRow
+            status={data.status}
+            disk={data.disk}
+            ram={data.ram}
+            backup={data.backup}
+          />
+        </div>
+      )}
+      {!data && !error && (
+        <div className="mt-8 flex w-full max-w-2xl justify-center gap-3">
+          {[0, 1, 2, 3].map((i) => (
+            <div
+              key={i}
+              className="shimmer h-24 min-w-[110px] flex-1 rounded-2xl border border-line"
+            />
+          ))}
+        </div>
+      )}
+
+      {/* App launcher */}
+      <div className="mt-10 w-full max-w-3xl">
         <AppLauncher apps={toInstalledApps(appStates)} />
-      </section>
-
-      {/* System widgets */}
-      <StorageCard
-        total={data.disk.total}
-        used={data.disk.used}
-        percent={data.disk.percent}
-      />
-      <RamCard percent={data.ram.percent} />
-      <BackupHealth
-        lastSuccess={data.backup.last_success}
-        status={data.backup.status}
-      />
+      </div>
     </div>
   );
 }

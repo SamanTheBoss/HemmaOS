@@ -130,6 +130,46 @@ export async function getSystemStatus(): Promise<SystemStatusResponse> {
   };
 }
 
+export interface DiskHealth {
+  device: string;
+  status: "healthy" | "failing" | "unknown";
+}
+
+// Hardware S.M.A.R.T. health per disk. smartctl needs host device access, so it
+// runs via a privileged host helper. Each command is simple (no nested shells)
+// to keep quoting safe; the whole thing degrades to [] if unavailable.
+export async function getDiskHealth(): Promise<DiskHealth[]> {
+  const helper =
+    "docker run --rm --privileged --pid=host justincormack/nsenter1";
+
+  let devices: string[] = [];
+  try {
+    const { stdout } = await shell(`${helper} smartctl --scan`);
+    devices = stdout
+      .split("\n")
+      .map((l) => l.trim().split(/\s+/)[0])
+      .filter((d) => d.startsWith("/dev/"));
+  } catch {
+    return [];
+  }
+
+  const results: DiskHealth[] = [];
+  for (const dev of devices.slice(0, 8)) {
+    try {
+      const { stdout } = await shell(`${helper} smartctl -H ${dev}`);
+      const status = /FAIL/i.test(stdout)
+        ? "failing"
+        : /PASSED|\bOK\b/i.test(stdout)
+          ? "healthy"
+          : "unknown";
+      results.push({ device: dev, status });
+    } catch {
+      results.push({ device: dev, status: "unknown" });
+    }
+  }
+  return results;
+}
+
 export async function reboot(): Promise<void> {
   // The API runs in a container, so `shutdown` here would only affect the
   // container. To reboot the *host*, spawn a one-shot privileged helper that

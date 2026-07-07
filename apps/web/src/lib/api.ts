@@ -88,6 +88,14 @@ export const api = {
   reboot: () =>
     request<{ success: boolean }>("/api/system/reboot", { method: "POST" }),
 
+  getDiskHealth: () =>
+    request<{
+      disks: {
+        device: string;
+        status: "healthy" | "failing" | "unknown";
+      }[];
+    }>("/api/system/disk-health"),
+
   checkUpdate: () =>
     request<{
       current: string;
