@@ -157,6 +157,18 @@ docker compose -f deploy/docker-compose.yml up -d --build
 The backend shells out to Docker/Tailscale, so testing is tiered — see
 [`deploy/TESTING.md`](deploy/TESTING.md) for the full walkthrough and known dev limits.
 
+Everything that puts HemmaOS on real hardware — the Docker stack, install/update
+scripts, provisioning a box for someone else, and cutting releases — is documented
+in [`deploy/README.md`](deploy/README.md).
+
+### Updates
+
+HemmaOS boxes track **GitHub Releases**, never raw `main`. Cut one with
+`bash deploy/release.sh <patch|minor|major>` (or the **Release** workflow in the
+Actions tab). The dashboard's "Check for updates" polls the latest release, and
+applying it checks out that release tag and rebuilds — so an unfinished commit on
+`main` can never land on a family's box.
+
 ### Roadmap: from script to appliance
 
 We ship in three levels of "plug-and-play":

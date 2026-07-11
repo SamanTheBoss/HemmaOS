@@ -5,3 +5,8 @@ dist/
 .env
 .env.*
 !.env.example
+
+# Local-only assistant/editor files — kept on the maintainer's machine, not published
+.claude/
+Claude.md
+CLAUDE.md
