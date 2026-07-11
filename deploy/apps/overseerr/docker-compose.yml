@@ -1,0 +1,19 @@
+services:
+  overseerr:
+    container_name: overseerr
+    image: lscr.io/linuxserver/overseerr:latest
+    restart: unless-stopped
+    ports:
+      - "5055:5055"
+    environment:
+      PUID: "1000"
+      PGID: "1000"
+      TZ: Europe/Stockholm
+    volumes:
+      - /opt/hemmaos/data/overseerr/config:/config
+    networks:
+      - hemmaos
+
+networks:
+  hemmaos:
+    external: true

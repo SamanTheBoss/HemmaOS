@@ -14,6 +14,10 @@ export const appNameSchema = z.enum([
   "uptimekuma",
   "memos",
   "transmission",
+  "radarr",
+  "sonarr",
+  "overseerr",
+  "qbittorrent",
 ]);
 
 export const appInstallRequestSchema = z.object({

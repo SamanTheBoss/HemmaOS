@@ -1,0 +1,21 @@
+services:
+  sonarr:
+    container_name: sonarr
+    image: lscr.io/linuxserver/sonarr:latest
+    restart: unless-stopped
+    ports:
+      - "8989:8989"
+    environment:
+      PUID: "1000"
+      PGID: "1000"
+      TZ: Europe/Stockholm
+    volumes:
+      - /opt/hemmaos/data/sonarr/config:/config
+      - /opt/hemmaos/data/media/tv:/tv
+      - /opt/hemmaos/data/media/downloads:/downloads
+    networks:
+      - hemmaos
+
+networks:
+  hemmaos:
+    external: true

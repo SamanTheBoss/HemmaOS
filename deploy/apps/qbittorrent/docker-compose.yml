@@ -1,0 +1,21 @@
+services:
+  qbittorrent:
+    container_name: qbittorrent
+    image: lscr.io/linuxserver/qbittorrent:latest
+    restart: unless-stopped
+    ports:
+      - "8082:8080"
+    environment:
+      PUID: "1000"
+      PGID: "1000"
+      TZ: Europe/Stockholm
+      WEBUI_PORT: "8080"
+    volumes:
+      - /opt/hemmaos/data/qbittorrent/config:/config
+      - /opt/hemmaos/data/media/downloads:/downloads
+    networks:
+      - hemmaos
+
+networks:
+  hemmaos:
+    external: true

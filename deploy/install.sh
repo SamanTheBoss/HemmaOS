@@ -93,7 +93,8 @@ $SUDO mkdir -p /opt/hemmaos/{config,data,apps}
 
 # Copy app compose templates
 for app in immich jellyfin adguard vaultwarden audiobookshelf wordpress \
-           nextcloud homeassistant navidrome stirling uptimekuma memos transmission; do
+           nextcloud homeassistant navidrome stirling uptimekuma memos transmission \
+           radarr sonarr overseerr qbittorrent; do
   $SUDO mkdir -p "/opt/hemmaos/apps/$app"
   $SUDO cp "apps/$app/docker-compose.yml" "/opt/hemmaos/apps/$app/"
 done
@@ -107,7 +108,8 @@ $SUDO mkdir -p /opt/hemmaos/data/{jellyfin/config,jellyfin/cache}
 $SUDO mkdir -p /opt/hemmaos/data/{adguard/work,adguard/conf}
 $SUDO mkdir -p /opt/hemmaos/data/vaultwarden
 $SUDO mkdir -p /opt/hemmaos/data/{audiobookshelf/config,audiobookshelf/metadata}
-$SUDO mkdir -p /opt/hemmaos/data/{media/audiobooks,media/podcasts,media/music,media/downloads}
+$SUDO mkdir -p /opt/hemmaos/data/{media/audiobooks,media/podcasts,media/music,media/downloads,media/movies,media/tv}
+$SUDO mkdir -p /opt/hemmaos/data/{radarr/config,sonarr/config,overseerr/config,qbittorrent/config}
 $SUDO mkdir -p /opt/hemmaos/data/{wordpress/html,wordpress/db}
 $SUDO mkdir -p /opt/hemmaos/data/{nextcloud/html,nextcloud/db}
 $SUDO mkdir -p /opt/hemmaos/data/homeassistant/config
