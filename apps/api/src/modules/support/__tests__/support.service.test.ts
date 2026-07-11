@@ -2,12 +2,13 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 
 vi.mock("../../../shared/lib/shell.js", () => ({
   shell: vi.fn().mockResolvedValue({ stdout: "", stderr: "" }),
+  hostShell: vi.fn().mockResolvedValue({ stdout: "", stderr: "" }),
 }));
 
 import { toggleSupport } from "../support.service.js";
-import { shell } from "../../../shared/lib/shell.js";
+import { hostShell } from "../../../shared/lib/shell.js";
 
-const mockShell = vi.mocked(shell);
+const mockShell = vi.mocked(hostShell);
 
 describe("support.service", () => {
   beforeEach(() => {
@@ -21,7 +22,9 @@ describe("support.service", () => {
       const result = await toggleSupport(true);
 
       expect(mockShell).toHaveBeenCalledWith(
-        "tailscale up --ssh --advertise-tags=tag:support --authkey=tskey-test-123",
+        expect.stringContaining(
+          "tailscale up --ssh --advertise-tags=tag:support --authkey=tskey-test-123",
+        ),
       );
       expect(result.support_active).toBe(true);
 
@@ -31,7 +34,9 @@ describe("support.service", () => {
     it("disables support via tailscale down", async () => {
       const result = await toggleSupport(false);
 
-      expect(mockShell).toHaveBeenCalledWith("tailscale down");
+      expect(mockShell).toHaveBeenCalledWith(
+        expect.stringContaining("tailscale down"),
+      );
       expect(result.support_active).toBe(false);
     });
 

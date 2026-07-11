@@ -170,6 +170,33 @@ export async function getDiskHealth(): Promise<DiskHealth[]> {
   return results;
 }
 
+export interface NetworkInfo {
+  /** First non-internal IPv4 of the host (the LAN address to type/bookmark). */
+  ip: string | null;
+  /** mDNS name Avahi publishes (see install.sh) — always hemmaos.local. */
+  mdns: string;
+}
+
+// The box's LAN address, read from the host's network interfaces. The API
+// container runs with the host network (or the address is bind-visible), so the
+// first non-internal IPv4 is the address a phone on the same WiFi would use.
+export function getNetworkInfo(): NetworkInfo {
+  const candidates: string[] = [];
+  const ifaces = os.networkInterfaces();
+  for (const addrs of Object.values(ifaces)) {
+    for (const addr of addrs ?? []) {
+      // Node <18 typed `family` as string ("IPv4"); >=18 uses the number 4.
+      const isV4 = addr.family === "IPv4" || (addr.family as unknown) === 4;
+      if (isV4 && !addr.internal) candidates.push(addr.address);
+    }
+  }
+  // Prefer a real LAN address over Docker bridge ranges (172.16–31.x), but fall
+  // back to whatever exists so we never return null when the box is online.
+  const ip =
+    candidates.find((a) => !a.startsWith("172.")) ?? candidates[0] ?? null;
+  return { ip, mdns: "hemmaos.local" };
+}
+
 export async function reboot(): Promise<void> {
   // The API runs in a container, so `shutdown` here would only affect the
   // container. To reboot the *host*, spawn a one-shot privileged helper that

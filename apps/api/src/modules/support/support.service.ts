@@ -1,4 +1,4 @@
-import { shell } from "../../shared/lib/shell.js";
+import { hostShell } from "../../shared/lib/shell.js";
 import { AppError } from "../../shared/middleware/error-handler.js";
 import type { SupportToggleResponse } from "./support.types.js";
 
@@ -21,10 +21,14 @@ export async function toggleSupport(
         "MISSING_SUPPORT_KEY",
       );
     }
-    // Runs as root inside the container — no `sudo` needed (and none present).
-    await shell(`tailscale up --ssh --advertise-tags=tag:support --authkey=${supportKey}`);
+    // Tailscale runs on the HOST (installed by provision.sh), so drive it via
+    // the host helper. --ssh exposes SSH only over the encrypted tailnet — no
+    // public port is ever opened. The tag scopes it to the support tailnet.
+    await hostShell(
+      `tailscale up --ssh --advertise-tags=tag:support --authkey=${supportKey}`,
+    );
   } else {
-    await shell("tailscale down");
+    await hostShell("tailscale down");
   }
 
   return { support_active: enabled };

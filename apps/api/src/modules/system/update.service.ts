@@ -66,10 +66,16 @@ export async function checkForUpdate(): Promise<UpdateInfo> {
 export async function applyUpdate(): Promise<void> {
   // The update rebuilds and restarts the api/web containers, so it can't run
   // *inside* the api container (it would kill itself mid-way). Launch a detached
-  // privileged helper that runs the update in the host's namespaces instead.
-  const script =
-    "cd /opt/hemmaos && git pull && docker compose -f deploy/docker-compose.yml up -d --build";
+  // privileged helper that runs the versioned self-update script in the host's
+  // namespaces instead.
+  //
+  // The script is copied to /tmp first so that when it `git checkout`s a new
+  // release tag, the still-running shell isn't reading from a file that just
+  // changed underneath it.
+  const cmd =
+    "cp /opt/hemmaos/deploy/self-update.sh /tmp/hemmaos-selfupdate.sh && " +
+    "bash /tmp/hemmaos-selfupdate.sh";
   await shell(
-    `docker run -d --rm --privileged --pid=host justincormack/nsenter1 sh -c "${script}"`,
+    `docker run -d --rm --privileged --pid=host justincormack/nsenter1 sh -c "${cmd}"`,
   );
 }

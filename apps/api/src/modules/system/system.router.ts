@@ -5,6 +5,7 @@ import * as systemController from "./system.controller.js";
 export const systemRouter = Router();
 
 systemRouter.get("/status", systemController.getStatus);
+systemRouter.get("/network", systemController.getNetwork);
 systemRouter.post("/reboot", requireParent, systemController.reboot);
 
 // Software updates (GitHub Releases)

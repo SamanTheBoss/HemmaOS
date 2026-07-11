@@ -110,6 +110,16 @@ export const api = {
   reboot: () =>
     request<{ success: boolean }>("/api/system/reboot", { method: "POST" }),
 
+  // The box's LAN IP + mDNS name, for the "Din box" reachability card.
+  getNetwork: () =>
+    request<{ ip: string | null; mdns: string }>("/api/system/network"),
+
+  // Absolute health-probe URL for a specific host (the box IP or hemmaos.local).
+  // The card fetches this against each host to light a green/red dot without
+  // going through resolveApiBase (which only knows the current hostname).
+  healthUrl: (host: string) =>
+    `${typeof window !== "undefined" ? window.location.protocol : "http:"}//${host}:4000/api/health`,
+
   getDiskHealth: () =>
     request<{
       disks: {

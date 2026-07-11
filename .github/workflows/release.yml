@@ -1,0 +1,101 @@
+name: Release
+
+# Manual deploy: cut a HemmaOS release straight from the GitHub UI.
+# Actions tab → "Release" → "Run workflow" → pick a bump.
+#
+# This bumps the root VERSION file, tags vX.Y.Z, and publishes a GitHub Release
+# with an auto-generated changelog. That Release is exactly what every box's
+# "Check for updates" polls (update.service → /releases/latest), and boxes only
+# move on a release — never on a raw push to main. Same result as running
+# deploy/release.sh locally, just in the cloud.
+
+on:
+  workflow_dispatch:
+    inputs:
+      bump:
+        description: "Version bump"
+        required: true
+        default: patch
+        type: choice
+        options:
+          - patch
+          - minor
+          - major
+      version:
+        description: "Explicit X.Y.Z (overrides bump; leave empty to use bump)"
+        required: false
+        type: string
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout (full history + tags)
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Compute next version
+        id: ver
+        run: |
+          set -euo pipefail
+          current="$(tr -d '[:space:]' < VERSION 2>/dev/null || echo 0.0.0)"
+          current="${current:-0.0.0}"
+          IFS='.' read -r MAJ MIN PAT <<<"$current"
+          MAJ="${MAJ:-0}"; MIN="${MIN:-0}"; PAT="${PAT:-0}"
+
+          explicit="${{ inputs.version }}"
+          if [ -n "$explicit" ]; then
+            case "$explicit" in
+              [0-9]*.[0-9]*.[0-9]*) next="$explicit" ;;
+              *) echo "::error::Invalid version '$explicit' (expected X.Y.Z)"; exit 1 ;;
+            esac
+          else
+            case "${{ inputs.bump }}" in
+              patch) next="$MAJ.$MIN.$((PAT + 1))" ;;
+              minor) next="$MAJ.$((MIN + 1)).0" ;;
+              major) next="$((MAJ + 1)).0.0" ;;
+            esac
+          fi
+          tag="v$next"
+          if git rev-parse "$tag" >/dev/null 2>&1; then
+            echo "::error::Tag $tag already exists"; exit 1
+          fi
+          echo "current=$current" >> "$GITHUB_OUTPUT"
+          echo "next=$next" >> "$GITHUB_OUTPUT"
+          echo "tag=$tag" >> "$GITHUB_OUTPUT"
+          echo "Releasing $current -> $next ($tag)"
+
+      - name: Build changelog
+        run: |
+          set -euo pipefail
+          prev="$(git tag -l 'v*' | sort -V | tail -n1)"
+          if [ -n "$prev" ]; then range="$prev..HEAD"; else range="HEAD"; fi
+          # Write to a file (not an output) so commit messages containing quotes,
+          # backticks or $ can't break the later shell command.
+          git log $range --no-merges --pretty=format:'- %s (%h)' > release-notes.md
+          [ -s release-notes.md ] || echo "- Maintenance release." > release-notes.md
+          cat release-notes.md
+
+      - name: Bump, commit, tag, push
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          echo "${{ steps.ver.outputs.next }}" > VERSION
+          git add VERSION
+          git commit -m "chore(release): ${{ steps.ver.outputs.tag }}"
+          git tag -a "${{ steps.ver.outputs.tag }}" -m "HemmaOS ${{ steps.ver.outputs.tag }}"
+          git push origin HEAD:${{ github.ref_name }}
+          git push origin "${{ steps.ver.outputs.tag }}"
+
+      - name: Create GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "${{ steps.ver.outputs.tag }}" \
+            --title "HemmaOS ${{ steps.ver.outputs.tag }}" \
+            --notes-file release-notes.md

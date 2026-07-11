@@ -1,5 +1,5 @@
 import { spawn } from "node:child_process";
-import { shell } from "../../shared/lib/shell.js";
+import { hostShell } from "../../shared/lib/shell.js";
 
 export interface TailscaleStatus {
   installed: boolean;
@@ -11,7 +11,7 @@ export interface TailscaleStatus {
 
 export async function getStatus(): Promise<TailscaleStatus> {
   try {
-    const { stdout } = await shell("tailscale status --json");
+    const { stdout } = await hostShell("tailscale status --json");
     const data = JSON.parse(stdout);
 
     const selfKey = data.Self?.DNSName ?? null;
@@ -50,10 +50,21 @@ export async function startAuth(): Promise<{
   }
 
   return new Promise((resolve) => {
-    // Runs as root inside the container — no `sudo` needed (and none present).
-    const proc = spawn("tailscale", ["up"], {
-      stdio: ["pipe", "pipe", "pipe"],
-    });
+    // `tailscale up` must run on the HOST (that's where tailscaled lives), so
+    // spawn the privileged helper and let it print the interactive login URL.
+    const proc = spawn(
+      "docker",
+      [
+        "run",
+        "--rm",
+        "--privileged",
+        "--pid=host",
+        "justincormack/nsenter1",
+        "tailscale",
+        "up",
+      ],
+      { stdio: ["pipe", "pipe", "pipe"] },
+    );
 
     let resolved = false;
     let stderr = "";
@@ -103,5 +114,5 @@ export async function startAuth(): Promise<{
 }
 
 export async function stop(): Promise<void> {
-  await shell("tailscale down");
+  await hostShell("tailscale down");
 }

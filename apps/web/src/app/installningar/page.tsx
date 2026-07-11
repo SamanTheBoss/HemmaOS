@@ -1,5 +1,6 @@
 "use client";
 
+import { NetworkStatus } from "@/components/settings/network-status";
 import { RemoteAccess } from "@/components/settings/remote-access";
 import { SupportToggle } from "@/components/settings/support-toggle";
 import { LogViewer } from "@/components/settings/log-viewer";
@@ -24,6 +25,7 @@ export default function InstallningarPage() {
       <h1 className="text-2xl font-bold tracking-tight text-white">{t("settings.title")}</h1>
       <p className="text-sm text-slate-400">{t("settings.subtitle")}</p>
 
+      <NetworkStatus />
       <RemoteAccess />
       {isParent && <SupportToggle />}
       {isParent && <BackupManager />}

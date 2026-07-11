@@ -14,6 +14,13 @@ export const app = express();
 app.use(cors());
 app.use(express.json());
 
+// Public liveness probe. The dashboard hits this (cross-origin, CORS-open) on
+// both the box's IP and hemmaos.local to show a green/red reachability dot per
+// access method — so it must answer before the auth middleware.
+app.get("/api/health", (_req, res) => {
+  res.json({ data: { ok: true } });
+});
+
 // Auth routes (check/setup/login are public, middleware handles it)
 app.use("/api/auth", authRouter);
 

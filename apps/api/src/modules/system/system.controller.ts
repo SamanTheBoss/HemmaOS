@@ -64,6 +64,10 @@ export async function getStatus(
   }
 }
 
+export function getNetwork(_req: Request, res: Response): void {
+  res.json({ data: systemService.getNetworkInfo() });
+}
+
 export async function reboot(
   _req: Request,
   res: Response,
