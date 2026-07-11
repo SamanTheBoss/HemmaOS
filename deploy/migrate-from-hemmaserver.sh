@@ -19,6 +19,11 @@ set -uo pipefail
 DEST="/opt/hemmaos/data"
 LOG="/opt/hemmaos/config/migrate.log"
 
+# Make sure the HemmaOS dirs exist even if install.sh hasn't run yet — otherwise
+# the log file (and every cp that redirects to it) can't be created.
+mkdir -p /opt/hemmaos/config "$DEST"
+: > "$LOG" 2>/dev/null || LOG="/tmp/hemmaos-migrate.log"
+
 # --- Locate the source ---
 SRC="${1:-}"
 if [ -z "$SRC" ]; then
