@@ -93,8 +93,9 @@ if docker ps --format '{{.Names}}' | grep -q '^immich_postgres$' && [ -f "$SRC/.
   echo "  Dumping old Immich DB → $DUMP" | tee -a "$LOG"
   if docker exec -e PGPASSWORD="$DBPASS" immich_postgres \
       pg_dump -U "${DBUSER:-postgres}" "${DBNAME:-immich}" > "$DUMP" 2>>"$LOG"; then
-    echo "  ✅ Dump saved. After HemmaOS Immich is running, restore with:" | tee -a "$LOG"
-    echo "     cat $DUMP | docker exec -i immich_postgres psql -U postgres immich" | tee -a "$LOG"
+    echo "  ✅ Dump saved. Then: stop the OLD stack, start HemmaOS, and restore" | tee -a "$LOG"
+    echo "     into HemmaOS's DB container (immich_db):" | tee -a "$LOG"
+    echo "     cat $DUMP | docker exec -i immich_db psql -U ${DBUSER:-postgres} ${DBNAME:-immich}" | tee -a "$LOG"
   else
     echo "  ⚠️  Dump failed — photos still migrated; Immich will re-scan them." | tee -a "$LOG"
   fi
