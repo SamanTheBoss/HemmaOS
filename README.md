@@ -15,6 +15,10 @@ your photos, passwords, documents and media never leave the house.
 - **Repo:** [github.com/SamanTheBoss/HemmaOS](https://github.com/SamanTheBoss/HemmaOS)
 - **License:** [CC BY-NC-SA 4.0](#license) — free for personal use, no commercial resale.
 
+<p align="center">
+  <img src="screenshots/dashboard.png" alt="HemmaOS dashboard — system health, storage and backup at a glance" width="820">
+</p>
+
 ---
 
 ## Quick install (one line)
@@ -88,6 +92,17 @@ HemmaOS runs on any Linux box, but it's designed for a specific appliance — **
   operator can read it.
 - **One-tap apps.** Install, open (on its real port, in a new tab) and uninstall apps from
   the dashboard — no terminal, no Docker knowledge.
+
+---
+
+## Screenshots
+
+| | |
+|:---:|:---:|
+| ![App Store](screenshots/appstore.png) | ![Settings — Your box](screenshots/settings1.png) |
+| **App Store** — one-tap installs, grouped by category | **Your box** — reach it by IP or `hemmaos.local`, no config |
+| ![Onboarding](screenshots/popup.png) | ![Login](screenshots/login.png) |
+| **Onboarding** — install your first app in seconds | **Login** — one shared box, one password |
 
 ---
 
