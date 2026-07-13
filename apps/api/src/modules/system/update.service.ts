@@ -63,6 +63,34 @@ export async function checkForUpdate(): Promise<UpdateInfo> {
   }
 }
 
+export interface CurrentRelease {
+  version: string;
+  changelog: string | null;
+  url: string | null;
+}
+
+// Release notes for the version the box is *currently* running. After an update
+// the box == latest, so checkForUpdate() reports no changelog; this fetches the
+// notes by tag so the dashboard can show a "what's new" popup post-update.
+export async function getCurrentReleaseNotes(): Promise<CurrentRelease> {
+  const current = await getCurrentVersion();
+  try {
+    const res = await fetch(
+      `https://api.github.com/repos/${REPO}/releases/tags/v${current}`,
+      { headers: { Accept: "application/vnd.github+json", "User-Agent": "HemmaOS" } },
+    );
+    if (!res.ok) return { version: current, changelog: null, url: null };
+    const data = (await res.json()) as { body?: string; html_url?: string };
+    return {
+      version: current,
+      changelog: data.body ?? null,
+      url: data.html_url ?? null,
+    };
+  } catch {
+    return { version: current, changelog: null, url: null };
+  }
+}
+
 export async function applyUpdate(): Promise<void> {
   // The update rebuilds and restarts the api/web containers, so it can't run
   // *inside* the api container (it would kill itself mid-way). Launch a detached

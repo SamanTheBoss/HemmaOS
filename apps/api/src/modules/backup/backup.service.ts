@@ -49,6 +49,20 @@ async function saveJobs(jobs: BackupJob[]): Promise<void> {
   await writeFile(BACKUP_JOBS_FILE, JSON.stringify(jobs, null, 2), "utf-8");
 }
 
+// Keep a short, friendly run history per job so families can see what happened.
+// Messages are rendered on the frontend from `status` (bilingual); `detail`
+// holds an optional raw snippet (e.g. the error reason).
+const MAX_HISTORY = 20;
+
+function appendHistory(
+  job: BackupJob,
+  status: "success" | "failed",
+  detail?: string,
+): void {
+  const entry = { time: new Date().toISOString(), status, ...(detail ? { detail } : {}) };
+  job.history = [entry, ...(job.history ?? [])].slice(0, MAX_HISTORY);
+}
+
 function scheduleToCron(schedule: BackupSchedule): string | null {
   switch (schedule) {
     case "daily":
@@ -149,10 +163,18 @@ export async function runJob(jobId: string): Promise<string> {
   try {
     await shell(command);
     job.lastStatus = "success";
+    appendHistory(job, "success");
     await saveJobs(jobs);
     return "Backup slutförd";
   } catch (err) {
     job.lastStatus = "failed";
+    // Surface a short, last-line reason (rsync/rclone print the cause last).
+    const raw =
+      (err as { stderr?: string })?.stderr ||
+      (err as Error)?.message ||
+      "";
+    const detail = raw.split("\n").filter(Boolean).pop()?.slice(0, 200);
+    appendHistory(job, "failed", detail);
     await saveJobs(jobs);
     throw new AppError(500, "Backup misslyckades", "BACKUP_FAILED");
   }

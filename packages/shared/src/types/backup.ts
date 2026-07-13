@@ -3,6 +3,7 @@ import type {
   backupTargetTypeSchema,
   backupSourceSchema,
   backupScheduleSchema,
+  backupLogEntrySchema,
   backupJobSchema,
   createBackupJobRequestSchema,
   createBackupJobResponseSchema,
@@ -18,6 +19,7 @@ import type {
 export type BackupTargetType = z.infer<typeof backupTargetTypeSchema>;
 export type BackupSource = z.infer<typeof backupSourceSchema>;
 export type BackupSchedule = z.infer<typeof backupScheduleSchema>;
+export type BackupLogEntry = z.infer<typeof backupLogEntrySchema>;
 export type BackupJob = z.infer<typeof backupJobSchema>;
 export type CreateBackupJobRequest = z.infer<typeof createBackupJobRequestSchema>;
 export type CreateBackupJobResponse = z.infer<typeof createBackupJobResponseSchema>;

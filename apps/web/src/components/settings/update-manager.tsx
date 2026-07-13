@@ -20,6 +20,7 @@ export function UpdateManager() {
   const [info, setInfo] = useState<UpdateState | null>(null);
   const [checking, setChecking] = useState(false);
   const [applying, setApplying] = useState(false);
+  const [timedOut, setTimedOut] = useState(false);
 
   async function check() {
     setChecking(true);
@@ -38,11 +39,36 @@ export function UpdateManager() {
 
   async function apply() {
     setApplying(true);
+    setTimedOut(false);
+    const from = info?.current;
     try {
       await api.applyUpdate();
     } catch {
       // the box restarts mid-request — expected
     }
+
+    // The box now fetches the release tag and rebuilds the api/web containers
+    // (a minute or two). Poll until it reports the new version, then reload so
+    // the fresh UI loads and the "what's new" popup fires. The api goes down and
+    // back up mid-rebuild, so failed polls are normal — keep going.
+    const started = Date.now();
+    const poll = setInterval(async () => {
+      if (Date.now() - started > 6 * 60_000) {
+        clearInterval(poll);
+        setTimedOut(true);
+        setApplying(false);
+        return;
+      }
+      try {
+        const u = await api.checkUpdate();
+        if (from && u.current && u.current !== from) {
+          clearInterval(poll);
+          window.location.reload();
+        }
+      } catch {
+        // api restarting — ignore and keep polling
+      }
+    }, 5000);
   }
 
   return (
@@ -102,16 +128,27 @@ export function UpdateManager() {
                 </pre>
               </div>
             )}
-            <Button
-              className="mt-4 w-full"
-              onClick={apply}
-              disabled={applying}
-            >
-              <Download className="h-4 w-4" />
-              {applying
-                ? t("settings.update.applying")
-                : t("settings.update.apply")}
-            </Button>
+            {!applying && !timedOut && (
+              <Button className="mt-4 w-full" onClick={apply}>
+                <Download className="h-4 w-4" />
+                {t("settings.update.apply")}
+              </Button>
+            )}
+
+            {applying && (
+              <div className="mt-4 flex items-center gap-2 rounded-xl border border-violet/30 bg-violet/10 p-3">
+                <RefreshCw className="h-4 w-4 shrink-0 animate-spin text-violet-200" />
+                <p className="text-xs text-violet-100/90">
+                  {t("settings.update.rebuilding")}
+                </p>
+              </div>
+            )}
+
+            {timedOut && (
+              <p className="mt-4 text-xs text-amber-300/90">
+                {t("settings.update.timeout")}
+              </p>
+            )}
           </div>
         )}
       </CardContent>

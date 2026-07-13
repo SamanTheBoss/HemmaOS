@@ -10,6 +10,7 @@ systemRouter.post("/reboot", requireParent, systemController.reboot);
 
 // Software updates (GitHub Releases)
 systemRouter.get("/update/check", systemController.checkUpdate);
+systemRouter.get("/update/current", systemController.getCurrentRelease);
 systemRouter.post("/update/apply", requireParent, systemController.applyUpdate);
 
 // Local box backup — download config/keys archive

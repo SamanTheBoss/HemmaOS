@@ -8,6 +8,7 @@ import {
   toInstalledApps,
 } from "@/components/dashboard/app-launcher";
 import { OnboardingWizard } from "@/components/dashboard/onboarding-wizard";
+import { WhatsNew } from "@/components/dashboard/whats-new";
 import { api } from "@/lib/api";
 import { useI18n } from "@/lib/i18n-context";
 
@@ -105,6 +106,7 @@ export default function HemPage() {
       </div>
 
       {appsLoaded && <OnboardingWizard hasApps={hasApps} />}
+      <WhatsNew />
     </div>
   );
 }

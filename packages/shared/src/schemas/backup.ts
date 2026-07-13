@@ -26,6 +26,15 @@ export const backupScheduleSchema = z.enum([
   "manual",
 ]);
 
+// One friendly log line per backup run. The message is derived on the frontend
+// from `status` (so it stays bilingual); `detail` carries an optional raw
+// snippet (e.g. the error reason) shown verbatim.
+export const backupLogEntrySchema = z.object({
+  time: z.string(),
+  status: z.enum(["success", "failed"]),
+  detail: z.string().optional(),
+});
+
 export const backupJobSchema = z.object({
   id: z.string(),
   name: z.string(),
@@ -36,6 +45,7 @@ export const backupJobSchema = z.object({
   lastRun: z.string().nullable(),
   lastStatus: z.enum(["success", "failed", "running", "never"]),
   enabled: z.boolean(),
+  history: z.array(backupLogEntrySchema).optional(),
 });
 
 export const createBackupJobRequestSchema = z.object({

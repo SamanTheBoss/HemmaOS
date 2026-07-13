@@ -51,6 +51,19 @@ export async function applyUpdate(
   }
 }
 
+export async function getCurrentRelease(
+  _req: Request,
+  res: Response,
+  next: NextFunction,
+): Promise<void> {
+  try {
+    const release = await updateService.getCurrentReleaseNotes();
+    res.json({ data: release });
+  } catch (err) {
+    next(err);
+  }
+}
+
 export async function getStatus(
   _req: Request,
   res: Response,

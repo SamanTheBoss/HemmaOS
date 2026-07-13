@@ -142,6 +142,12 @@ export const api = {
       method: "POST",
     }),
 
+  // Release notes for the currently-installed version (for the "what's new" popup).
+  getCurrentRelease: () =>
+    request<{ version: string; changelog: string | null; url: string | null }>(
+      "/api/system/update/current",
+    ),
+
   // Downloads the config/keys archive as a Blob (binary, so not via request()).
   downloadConfigBackup: async (): Promise<Blob> => {
     const res = await fetch(`${resolveApiBase()}/api/system/backup/config`, {
@@ -237,6 +243,11 @@ export const api = {
         lastRun: string | null;
         lastStatus: string;
         enabled: boolean;
+        history?: {
+          time: string;
+          status: "success" | "failed";
+          detail?: string;
+        }[];
       }[];
     }>("/api/backup/jobs"),
 
